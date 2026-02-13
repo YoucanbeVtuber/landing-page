@@ -1,0 +1,6 @@
+/* Override any injected overflow styles on main */
+main {
+  overflow: visible !important;
+  overflow-x: clip !important;
+  overflow-y: visible !important;
+}
