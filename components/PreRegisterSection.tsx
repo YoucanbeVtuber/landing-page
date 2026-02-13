@@ -30,11 +30,11 @@ export default function PreRegisterSection() {
   };
 
   return (
-    <section className="relative min-h-screen py-32 px-6 gradient-purple overflow-hidden">
+    <section id="pre-register" className="relative min-h-screen py-32 px-6 gradient-purple-white overflow-hidden">
       {/* Background decoration */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-white rounded-full blur-3xl" />
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-10 left-10 w-64 h-64 bg-purple-600 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-400 rounded-full blur-3xl" />
       </div>
 
       <div className="relative max-w-4xl mx-auto text-center">
@@ -54,7 +54,7 @@ export default function PreRegisterSection() {
           {!showForm ? (
             <motion.button
               onClick={() => setShowForm(true)}
-              className="px-10 py-4 bg-white text-purple-600 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all"
+              className="px-10 py-4 bg-purple-600 text-white rounded-full font-semibold text-lg shadow-lg hover:shadow-xl hover:bg-purple-700 transition-all"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
