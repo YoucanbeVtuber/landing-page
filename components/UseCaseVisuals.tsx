@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 // Types
 interface UseCaseVisualsProps {
   currentStep: number;
+  stackMode?: boolean;
 }
 
 // Layer Data matching the files we found
@@ -34,7 +35,10 @@ const EYE_DETAILS = [
 ];
 
 
-export default function UseCaseVisuals({ currentStep }: UseCaseVisualsProps) {
+export default function UseCaseVisuals({
+  currentStep,
+  stackMode = false,
+}: UseCaseVisualsProps) {
   // --- Split Step State ---
   const [activeLayerIndex, setActiveLayerIndex] = useState(0);
   const [isSplitting, setIsSplitting] = useState(true); // Loading state for Split
@@ -143,7 +147,13 @@ export default function UseCaseVisuals({ currentStep }: UseCaseVisualsProps) {
 
 
   return (
-    <div className="relative w-full aspect-square max-w-lg mx-auto bg-gray-900 rounded-xl overflow-hidden shadow-2xl border border-gray-800">
+    <div
+      className={`relative w-full ${
+        stackMode
+          ? "h-[56vh] max-h-[560px]"
+          : "h-[72vh] max-h-[700px]"
+      } sm:h-auto sm:aspect-square max-w-[92vw] sm:max-w-lg mx-auto bg-gray-900 rounded-xl overflow-hidden shadow-2xl border border-gray-800`}
+    >
       
       {/* Background Grid (Photoshop-like transparency) */}
       <div className="absolute inset-0 opacity-20" 
@@ -167,9 +177,9 @@ export default function UseCaseVisuals({ currentStep }: UseCaseVisualsProps) {
             <div className="relative w-full h-full flex items-center justify-center">
                 {/* Drop Zone */}
                 <motion.div 
-                    className="relative w-64 h-64 border-4 border-dashed border-gray-600 rounded-lg flex items-center justify-center bg-gray-800/50"
+                    className="relative w-44 h-44 sm:w-64 sm:h-64 border-4 border-dashed border-gray-600 rounded-lg flex items-center justify-center bg-gray-800/50"
                 >
-                    <p className="text-gray-400 absolute mt-32">Drop Image Here</p>
+                    <p className="text-gray-400 text-xs sm:text-base absolute mt-24 sm:mt-32">Drop Image Here</p>
                 </motion.div>
 
                 {/* Draggable File Icon */}
@@ -231,42 +241,42 @@ export default function UseCaseVisuals({ currentStep }: UseCaseVisualsProps) {
 
         {/* --- Step 1 & 2: Split & Select/Edit --- */}
         {(currentStep === 1 || currentStep === 2) && (
-          <motion.div 
-            key="step-ui"
-            className="absolute inset-0 flex"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.5 }}
-          >
+            <motion.div 
+              key="step-ui"
+              className="absolute inset-0 flex flex-col sm:flex-row"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.5 }}
+            >
+            {/* Progress Bar Overlay (for processing/generating) - Covers entire visual area */}
+            <AnimatePresence>
+                {((currentStep === 1 && isSplitting) || (currentStep === 2 && isGenerating)) && (
+                    <motion.div 
+                        key="loading-overlay"
+                        className="absolute inset-0 z-50 bg-black/60 flex flex-col items-center justify-center backdrop-blur-sm"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                        <div className="text-white font-semibold mb-2">
+                            처리 중...
+                        </div>
+                        <div className="w-48 h-2 bg-gray-700 rounded-full overflow-hidden">
+                            <motion.div 
+                                className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
+                                initial={{ width: "0%" }}
+                                animate={{ width: "100%" }}
+                                transition={{ duration: 1.5, ease: "easeInOut" }}
+                            />
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Left: Canvas Area */}
-            <div className="w-2/3 relative flex items-center justify-center p-4 bg-[#1e1e1e]">
-              <div className="relative w-full h-full"> 
-                
-                {/* Progress Bar Overlay (for processing/generating) */}
-                <AnimatePresence>
-                    {((currentStep === 1 && isSplitting) || (currentStep === 2 && isGenerating)) && (
-                        <motion.div 
-                            key="loading-overlay"
-                            className="absolute inset-0 z-30 bg-black/60 flex flex-col items-center justify-center backdrop-blur-sm"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                        >
-                            <div className="text-white font-semibold mb-2">
-                                {currentStep === 1 ? "Processing..." : "Generating..."}
-                            </div>
-                            <div className="w-48 h-2 bg-gray-700 rounded-full overflow-hidden">
-                                <motion.div 
-                                    className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
-                                    initial={{ width: "0%" }}
-                                    animate={{ width: "100%" }}
-                                    transition={{ duration: 1.5, ease: "easeInOut" }}
-                                />
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+            <div className="w-full sm:w-2/3 h-[62%] sm:h-auto relative flex items-center justify-center p-2 sm:p-4 bg-[#1e1e1e]">
+              <div className="relative w-full h-full">
 
                 {/* Background Image for Step 1 (Split) - Show Base Image During Processing */}
                 {currentStep === 1 && (
@@ -427,14 +437,14 @@ export default function UseCaseVisuals({ currentStep }: UseCaseVisualsProps) {
               {/* Input Overlay for Step 2 */}
               {currentStep === 2 && !isGenerating && !isConfirmed && (
                 <motion.div 
-                  className="absolute bottom-8 left-1/2 -translate-x-1/2 w-64 bg-gray-800 p-3 rounded-lg shadow-xl border border-gray-600 z-20"
+                  className="absolute bottom-3 sm:bottom-8 left-2 right-2 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 sm:w-64 bg-gray-800 p-2 sm:p-3 rounded-lg shadow-xl border border-gray-600 z-20"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.5 }} // Wait for cursor selection
                 >
                   <div className="text-xs text-gray-400 mb-1">Edit Layer</div>
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 bg-gray-900 border border-gray-700 px-2 py-1 text-sm text-white h-8 flex items-center">
+                    <div className="min-w-0 flex-1 bg-gray-900 border border-gray-700 px-2 py-1 text-xs sm:text-sm text-white h-8 flex items-center overflow-hidden">
                       {typedText}<span className="animate-pulse">|</span>
                     </div>
                     {showConfirm && (
@@ -453,18 +463,18 @@ export default function UseCaseVisuals({ currentStep }: UseCaseVisualsProps) {
             </div>
 
             {/* Right: Layer List UI */}
-            <div className="w-1/3 bg-[#252525] border-l border-gray-700 p-2 flex flex-col gap-1 overflow-y-auto">
+            <div className="w-full sm:w-1/3 h-[38%] sm:h-auto bg-[#252525] border-t sm:border-t-0 sm:border-l border-gray-700 p-1.5 sm:p-2 flex flex-col gap-1 overflow-y-visible sm:overflow-y-auto">
               <div className="text-xs text-gray-400 mb-2 font-semibold">Layers</div>
               {LAYERS.map((layer, idx) => (
                 <motion.div
                   key={layer.id}
                   onClick={() => handleLayerSelect(idx)}
-                  className={`p-2 rounded text-xs flex items-center gap-2 transition-colors duration-300 cursor-pointer hover:bg-gray-600 ${
+                  className={`p-1.5 sm:p-2 rounded text-[11px] sm:text-xs leading-tight flex items-center gap-1.5 sm:gap-2 transition-colors duration-300 cursor-pointer hover:bg-gray-600 ${
                     (currentStep === 1 && idx === activeLayerIndex) || (currentStep === 2 && layer.id === "hair") 
                       ? "bg-purple-600 text-white font-bold ring-1 ring-purple-400" 
                       : "bg-gray-700 text-gray-300"
                   }`}
-                  style={{ marginLeft: `${(layer.depth || 0) * 12}px` }}
+                  style={{ marginLeft: `${(layer.depth || 0) * 6}px` }}
                 >
                   <div className="w-4 h-4 flex items-center justify-center">
                       {(layer.depth === 0 && layer.isFolder) ? (
@@ -483,7 +493,7 @@ export default function UseCaseVisuals({ currentStep }: UseCaseVisualsProps) {
             {/* Cursor for Step 2 (Select Animation) */}
             {currentStep === 2 && (
               <motion.div
-                className="absolute z-50 pointer-events-none"
+                className="absolute z-50 pointer-events-none hidden sm:block"
                 initial={{ x: 300, y: 300, opacity: 0 }} // Start outside
                 animate={{ 
                     x: [300, 390, 390, 400],

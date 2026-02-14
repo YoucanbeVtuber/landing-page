@@ -14,13 +14,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToPreRegister = () => {
-    const section = document.getElementById("pre-register");
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -33,13 +26,9 @@ export default function Navbar() {
           LIVINGCEl
         </Link>
         
-        {/* CTA Button */}
-        <button
-          onClick={scrollToPreRegister}
-          className="px-5 py-2 bg-white text-black hover:bg-gray-200 rounded-full text-sm font-bold transition-colors"
-        >
-          사전예약하러 가기
-        </button>
+        <span className="px-3 py-1 rounded-full border border-white/20 bg-white/10 text-xs font-semibold tracking-wide text-white/90">
+          Private Alpha v0.1
+        </span>
       </div>
     </nav>
   );

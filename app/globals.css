@@ -23,6 +23,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  word-break: keep-all;
 }
 
 html {
@@ -43,6 +44,30 @@ body {
   overflow: visible !important; /* Force prevent overflow hidden injection */
   overflow-x: clip !important;
   overflow-y: visible !important;
+}
+
+/* Keep browser autofill colors aligned with dark input theme */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff;
+  -webkit-box-shadow: 0 0 0 1000px #1f2937 inset;
+  transition: background-color 9999s ease-in-out 0s;
+  caret-color: #ffffff;
+}
+
+input:-moz-autofill,
+textarea:-moz-autofill,
+select:-moz-autofill {
+  box-shadow: 0 0 0 1000px #1f2937 inset;
+  -moz-text-fill-color: #ffffff;
+  caret-color: #ffffff;
 }
 
 /* CSS 3D Transform utilities for Hero section */
@@ -103,4 +128,10 @@ section {
   section {
     padding: 10rem 3rem;
   }
+}
+
+html.modal-open, body.modal-open {
+  overflow: hidden !important;
+  overscroll-behavior: contain;
+  touch-action: none;
 }

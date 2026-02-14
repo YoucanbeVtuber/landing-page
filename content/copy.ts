@@ -3,7 +3,7 @@
 export const COPY = {
   hero: {
     title: "그림 한 장으로\n파츠 분할 자동화.",
-    subtitle: "업로드 한 번으로 자동 레이어 분할과 인페인팅.\n아티스트는 창작에만 집중하세요.",
+    subtitle: "자동 레이어 분할과 인페인팅.\n당신은 창작에만 집중하세요.",
     cta: "지금 시작하기",
   },
   
@@ -34,7 +34,7 @@ export const COPY = {
   preRegister: {
     title: "곧 만나요",
     subtitle: "사전 예약하시면 출시 소식을 가장 먼저 받아보실 수 있습니다",
-    ctaButton: "사전 예약하기",
+    ctaButton: "얼리 액세스 신청",
     
     form: {
       contactTypeLabel: "연락 방법 선택",
@@ -43,12 +43,22 @@ export const COPY = {
       emailPlaceholder: "example@email.com",
       phonePlaceholder: "010-1234-5678",
       submit: "예약하기",
+      privacy: {
+        label: "개인정보수집 동의 (필수)",
+        linkText: "개인정보수집",
+        title: "개인정보 수집 및 이용 동의",
+        purpose: "수집 목적: 사전 예약 신청 확인 및 출시 안내 연락",
+        items: "수집 항목: 이메일 주소",
+        retention: "보유 기간: 서비스 출시 안내 후 최대 1년 또는 동의 철회 시까지",
+        rights: "동의를 거부할 권리가 있으며, 거부 시 사전 예약 신청이 제한될 수 있습니다.",
+      },
       
       validation: {
         emailRequired: "이메일을 입력해주세요",
         emailInvalid: "올바른 이메일 형식이 아닙니다",
         phoneRequired: "전화번호를 입력해주세요",
         phoneInvalid: "올바른 전화번호 형식이 아닙니다 (10-11자리)",
+        privacyRequired: "개인정보수집 동의가 필요합니다",
       },
       
       success: "사전 예약이 완료되었습니다! 곧 연락드리겠습니다.",

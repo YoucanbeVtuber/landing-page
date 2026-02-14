@@ -3,64 +3,64 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { COPY } from "@/content/copy";
-import { isValidEmail, isValidPhone } from "@/utils/validators";
-import PhoneInput from "./PhoneInput";
+import { isValidEmail } from "@/utils/validators";
 
 interface ContactFormProps {
   onSuccess: () => void;
   onError: () => void;
+  isMobileModal?: boolean;
 }
 
-export default function ContactForm({ onSuccess, onError }: ContactFormProps) {
-  const [contactType, setContactType] = useState<'email' | 'phone'>('email');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [error, setError] = useState('');
+export default function ContactForm({
+  onSuccess,
+  onError,
+  isMobileModal = false,
+}: ContactFormProps) {
+  const [email, setEmail] = useState("");
+  const [isPrivacyAgreed, setIsPrivacyAgreed] = useState(false);
+  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
+  const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const googleFormAction =
+    "https://docs.google.com/forms/d/1MjgUwdwWVM99_yye543kDS-kLvewxwwn_bgymEuVnoA/formResponse";
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError('');
+    setError("");
+    const normalizedEmail = email.trim().toLowerCase();
 
-    // Validation
-    if (contactType === 'email') {
-      if (!email) {
-        setError(COPY.preRegister.form.validation.emailRequired);
-        return;
-      }
-      if (!isValidEmail(email)) {
-        setError(COPY.preRegister.form.validation.emailInvalid);
-        return;
-      }
-    } else {
-      if (!phone) {
-        setError(COPY.preRegister.form.validation.phoneRequired);
-        return;
-      }
-      if (!isValidPhone(phone)) {
-        setError(COPY.preRegister.form.validation.phoneInvalid);
-        return;
-      }
+    if (!normalizedEmail) {
+      setError(COPY.preRegister.form.validation.emailRequired);
+      return;
     }
 
-    // Dummy submission
+    if (!isValidEmail(normalizedEmail) || normalizedEmail.length > 254) {
+      setError(COPY.preRegister.form.validation.emailInvalid);
+      return;
+    }
+
+    if (!isPrivacyAgreed) {
+      setError(COPY.preRegister.form.validation.privacyRequired);
+      return;
+    }
+
     setIsSubmitting(true);
-    
+
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      console.log('Pre-register submission:', {
-        type: contactType,
-        value: contactType === 'email' ? email : phone,
+      const formData = new FormData();
+      formData.append("entry.195494443", normalizedEmail);
+
+      await fetch(googleFormAction, {
+        method: "POST",
+        mode: "no-cors",
+        body: formData,
       });
 
+      setEmail("");
+      setIsPrivacyAgreed(false);
+      setShowPrivacyPolicy(false);
       onSuccess();
-      
-      // Reset form
-      setEmail('');
-      setPhone('');
-    } catch (err) {
+    } catch {
       onError();
     } finally {
       setIsSubmitting(false);
@@ -68,63 +68,72 @@ export default function ContactForm({ onSuccess, onError }: ContactFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-8 shadow-2xl max-w-md mx-auto">
-      {/* Contact Type Toggle */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          {COPY.preRegister.form.contactTypeLabel}
-        </label>
-        <div className="flex gap-3">
-          <motion.button
-            type="button"
-            onClick={() => setContactType('email')}
-            className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
-              contactType === 'email'
-                ? 'bg-purple-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-            whileTap={{ scale: 0.95 }}
-          >
-            {COPY.preRegister.form.email}
-          </motion.button>
-          <motion.button
-            type="button"
-            onClick={() => setContactType('phone')}
-            className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
-              contactType === 'phone'
-                ? 'bg-purple-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-            whileTap={{ scale: 0.95 }}
-          >
-            {COPY.preRegister.form.phone}
-          </motion.button>
-        </div>
+    <form
+      onSubmit={handleSubmit}
+      className={`bg-gray-900/80 backdrop-blur-sm border border-purple-500/20 shadow-2xl mx-auto w-full ${
+        isMobileModal
+          ? "rounded-2xl p-4 sm:p-6 max-w-md"
+          : "rounded-3xl p-8 max-w-md"
+      }`}
+    >
+      <div className={isMobileModal ? "mb-4" : "mb-6"}>
+        <input
+          type="email"
+          name="entry.195494443"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder={COPY.preRegister.form.emailPlaceholder}
+          className={`w-full px-4 bg-gray-800 border-2 border-gray-700 text-white placeholder-gray-400 rounded-xl focus:border-purple-500 focus:bg-gray-750 focus:outline-none transition-colors ${
+            isMobileModal ? "py-3.5 text-base" : "py-3"
+          }`}
+          required
+        />
       </div>
 
-      {/* Input Field */}
-      <div className="mb-6">
-        {contactType === 'email' ? (
+      <div className={`text-left ${isMobileModal ? "mb-4" : "mb-5"}`}>
+        <label className="flex items-center gap-2 text-xs text-gray-300 cursor-pointer">
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={COPY.preRegister.form.emailPlaceholder}
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
+            type="checkbox"
+            checked={isPrivacyAgreed}
+            onChange={(e) => setIsPrivacyAgreed(e.target.checked)}
+            className="h-4 w-4 rounded border border-gray-600 bg-gray-900 checked:bg-purple-500 checked:border-purple-500 focus:ring-1 focus:ring-purple-400 focus:ring-offset-0"
           />
-        ) : (
-          <PhoneInput
-            value={phone}
-            onChange={setPhone}
-            placeholder={COPY.preRegister.form.phonePlaceholder}
-          />
+          <span>
+            <button
+              type="button"
+              onClick={() => setShowPrivacyPolicy((prev) => !prev)}
+              className="underline underline-offset-2 text-purple-300 hover:text-purple-200 transition-colors"
+            >
+              {COPY.preRegister.form.privacy.linkText}
+            </button>{" "}
+            {COPY.preRegister.form.privacy.label.replace(
+              COPY.preRegister.form.privacy.linkText,
+              ""
+            )}
+          </span>
+        </label>
+
+        {showPrivacyPolicy && (
+          <motion.div
+            className="mt-2 text-[11px] text-gray-400 leading-relaxed space-y-1"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            transition={{ duration: 0.2 }}
+          >
+            <p className="text-xs text-gray-200 font-medium">
+              {COPY.preRegister.form.privacy.title}
+            </p>
+            <p>{COPY.preRegister.form.privacy.purpose}</p>
+            <p>{COPY.preRegister.form.privacy.items}</p>
+            <p>{COPY.preRegister.form.privacy.retention}</p>
+            <p>{COPY.preRegister.form.privacy.rights}</p>
+          </motion.div>
         )}
       </div>
 
-      {/* Error Message */}
       {error && (
         <motion.p
-          className="text-red-500 text-sm mb-4"
+          className={`text-red-500 ${isMobileModal ? "text-xs mb-3" : "text-sm mb-4"}`}
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -132,15 +141,16 @@ export default function ContactForm({ onSuccess, onError }: ContactFormProps) {
         </motion.p>
       )}
 
-      {/* Submit Button */}
       <motion.button
         type="submit"
         disabled={isSubmitting}
-        className="w-full py-4 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className={`w-full bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 text-white rounded-xl font-semibold hover:shadow-xl hover:shadow-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all ${
+          isMobileModal ? "py-3 text-base" : "py-2.5"
+        }`}
         whileHover={!isSubmitting ? { scale: 1.02 } : {}}
         whileTap={!isSubmitting ? { scale: 0.98 } : {}}
       >
-        {isSubmitting ? '처리 중...' : COPY.preRegister.form.submit}
+        {isSubmitting ? "처리 중..." : COPY.preRegister.form.submit}
       </motion.button>
     </form>
   );

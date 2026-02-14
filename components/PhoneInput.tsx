@@ -32,7 +32,7 @@ export default function PhoneInput({ value, onChange, placeholder }: PhoneInputP
       value={displayValue}
       onChange={handleChange}
       placeholder={placeholder}
-      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
+      className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 text-white placeholder-gray-400 rounded-xl focus:border-purple-500 focus:bg-gray-750 focus:outline-none transition-colors"
       inputMode="numeric"
     />
   );
