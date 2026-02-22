@@ -1,53 +1,89 @@
 "use client";
 
-import { motion, useScroll, useMotionValueEvent } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { useState } from "react";
 import { COPY } from "@/content/copy";
 import UseCaseVisuals from "./UseCaseVisuals";
 
+// 각 스텝별 디자인 토큰
+const stepDesigns = [
+  {
+    accent: "from-violet-500 to-purple-600",
+    accentLight: "bg-violet-50",
+    accentText: "text-violet-600",
+    accentBorder: "border-violet-100",
+    badgeLabel: "STEP 01",
+    titleSize: "text-2xl sm:text-3xl",
+    titleWeight: "font-black",
+    descStyle: "text-base",
+  },
+  {
+    accent: "from-pink-500 to-rose-500",
+    accentLight: "bg-pink-50",
+    accentText: "text-pink-600",
+    accentBorder: "border-pink-100",
+    badgeLabel: "STEP 02",
+    titleSize: "text-xl sm:text-2xl",
+    titleWeight: "font-extrabold",
+    descStyle: "text-sm",
+  },
+  {
+    accent: "from-amber-400 to-orange-500",
+    accentLight: "bg-amber-50",
+    accentText: "text-amber-600",
+    accentBorder: "border-amber-100",
+    badgeLabel: "STEP 03",
+    titleSize: "text-2xl sm:text-3xl",
+    titleWeight: "font-black",
+    descStyle: "text-base",
+  },
+  {
+    accent: "from-emerald-500 to-teal-500",
+    accentLight: "bg-emerald-50",
+    accentText: "text-emerald-600",
+    accentBorder: "border-emerald-100",
+    badgeLabel: "STEP 04",
+    titleSize: "text-xl sm:text-2xl",
+    titleWeight: "font-extrabold",
+    descStyle: "text-sm",
+  },
+];
+
 export default function UseCaseSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
   const [activeCards, setActiveCards] = useState<Record<number, boolean>>({});
   const [playTokens, setPlayTokens] = useState<Record<number, number>>({});
 
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 767px)");
-    const updateMobile = () => setIsMobile(mediaQuery.matches);
-    updateMobile();
-    mediaQuery.addEventListener("change", updateMobile);
-    return () => mediaQuery.removeEventListener("change", updateMobile);
-  }, []);
+  return (
+    <section className="relative bg-white px-4 py-24 overflow-hidden">
+      {/* 배경 장식 */}
+      <div className="absolute top-1/4 -left-32 w-64 h-64 bg-purple-100/30 rounded-full blur-[80px] pointer-events-none" />
+      <div className="absolute bottom-1/4 -right-32 w-64 h-64 bg-pink-100/20 rounded-full blur-[80px] pointer-events-none" />
 
-  // Track scroll through entire 500vh runway (100vh per step approx)
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end end"],
-  });
+      {/* Section Header */}
+      <div className="max-w-3xl mx-auto text-center mb-20">
+        <span className="inline-block px-3 py-1 rounded-full bg-purple-50 text-purple-600 text-xs font-semibold tracking-widest uppercase mb-4">
+          How It Works
+        </span>
+        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+          {COPY.useCase.sectionTitle}
+        </h2>
+        <p className="text-gray-500 text-lg max-w-lg mx-auto">
+          {COPY.useCase.sectionSubtitle}
+        </p>
+      </div>
 
-  // Determine current step based on scroll progress
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    if (isMobile) return;
-    const stepCount = COPY.useCase.steps.length;
-    const stepIndex = Math.floor(latest * stepCount);
-    // Clamp between 0 and stepCount - 1
-    const clampedStep = Math.max(0, Math.min(stepIndex, stepCount - 1));
-    setCurrentStep(clampedStep);
-  });
+      <div className="mx-auto max-w-2xl space-y-6">
+        {COPY.useCase.steps.map((step, index) => {
+          const design = stepDesigns[index % stepDesigns.length];
 
-  if (isMobile) {
-    return (
-      <section className="relative bg-[#0a0a0f] px-4 py-12">
-        <div className="mx-auto max-w-3xl space-y-10">
-          {COPY.useCase.steps.map((step, index) => (
+          return (
             <motion.article
               key={step.title}
-              className="rounded-2xl border border-gray-800 bg-[#12121a] p-4"
-              initial={{ opacity: 0, y: 24 }}
+              className={`relative rounded-3xl border ${design.accentBorder} bg-white overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300`}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.25 }}
-              transition={{ duration: 0.45, ease: "easeOut" }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5, ease: "easeOut", delay: index * 0.06 }}
               onViewportEnter={() => {
                 setActiveCards((prev) => ({ ...prev, [index]: true }));
                 setPlayTokens((prev) => ({
@@ -59,81 +95,54 @@ export default function UseCaseSection() {
                 setActiveCards((prev) => ({ ...prev, [index]: false }));
               }}
             >
-              <h2 className="text-2xl font-bold mb-3 text-white whitespace-pre-line">
-                {step.title}
-              </h2>
-              <p className="text-base text-purple-200 leading-relaxed whitespace-pre-line mb-4">
-                {step.description}
-              </p>
-              {activeCards[index] ? (
-                <UseCaseVisuals
-                  key={`${index}-${playTokens[index] ?? 0}`}
-                  currentStep={index}
-                  stackMode
-                />
-              ) : (
-                <div className="w-full h-[56vh] max-h-[560px] rounded-xl border border-gray-800 bg-gray-900/40" />
-              )}
+              {/* 상단 그라디언트 스트라이프 */}
+              <div className={`h-1 w-full bg-gradient-to-r ${design.accent}`} />
+
+              <div className="p-6">
+                {/* Step header */}
+                <div className="flex items-start gap-4 mb-5">
+                  {/* 스텝 넘버 - 배지 스타일 */}
+                  <div className="flex-shrink-0 flex flex-col items-center">
+                    <div className={`inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-gradient-to-br ${design.accent} shadow-md`}>
+                      <span className="text-white text-sm font-black">{String(index + 1).padStart(2, "0")}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    {/* 레이블 */}
+                    <span className={`inline-block text-[10px] font-bold tracking-[0.18em] uppercase ${design.accentText} mb-1`}>
+                      {design.badgeLabel}
+                    </span>
+
+                    {/* 제목 - 스텝마다 크기/굵기 변주 */}
+                    <h3 className={`${design.titleSize} ${design.titleWeight} text-gray-900 leading-tight`}>
+                      {step.title}
+                    </h3>
+
+                    {/* 설명 - 왼쪽 강조선 포인트 */}
+                    <div className="mt-2 relative pl-3">
+                      <div className={`absolute left-0 top-0 bottom-0 w-0.5 rounded-full bg-gradient-to-b ${design.accent}`} />
+                      <p className={`${design.descStyle} text-gray-500 leading-relaxed whitespace-pre-line`}>
+                        {step.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Visual */}
+                {activeCards[index] ? (
+                  <UseCaseVisuals
+                    key={`${index}-${playTokens[index] ?? 0}`}
+                    currentStep={index}
+                    stackMode
+                  />
+                ) : (
+                  <div className={`w-full h-[50vh] max-h-[480px] rounded-2xl border ${design.accentBorder} ${design.accentLight} opacity-40`} />
+                )}
+              </div>
             </motion.article>
-          ))}
-        </div>
-      </section>
-    );
-  }
-
-  return (
-    <section
-      ref={sectionRef}
-      className="relative h-[520vh] md:h-[500vh] bg-[#0a0a0f]"
-    >
-      <div className="sticky top-[72px] md:top-0 h-[calc(100vh-72px)] md:h-screen flex flex-col items-center justify-start overflow-visible md:overflow-hidden pt-8 md:pt-32">
-        <div className="container mx-auto px-4 md:px-6 h-full flex flex-col md:flex-row items-center gap-6 md:gap-12">
-          
-          {/* Left: Text Content - Changes based on current Step */}
-          <div className="w-full md:w-1/2 flex flex-col justify-center order-2 md:order-1 relative min-h-[12rem] md:h-64">
-             {COPY.useCase.steps.map((step, index) => (
-               <motion.div
-                 key={index}
-                 className="absolute top-0 left-0 w-full"
-                 initial={{ opacity: 0, x: -20 }}
-                 animate={{ 
-                   opacity: currentStep === index ? 1 : 0,
-                   x: currentStep === index ? 0 : -20,
-                   pointerEvents: currentStep === index ? "auto" : "none"
-                 }}
-                 transition={{ duration: 0.5 }}
-               >
-                 <h2 className="text-2xl md:text-5xl font-bold mb-3 md:mb-6 text-white whitespace-pre-line">
-                   {step.title}
-                 </h2>
-                 <p className="text-base md:text-xl text-purple-200 leading-relaxed whitespace-pre-line">
-                   {step.description}
-                 </p>
-               </motion.div>
-             ))}
-          </div>
-
-          {/* Right: Visuals - Sticky and Animated */}
-          <div className="w-full md:w-1/2 order-1 md:order-2 flex items-center justify-center">
-            <UseCaseVisuals currentStep={currentStep} />
-          </div>
-
-        </div>
-
-        {/* Vertical Scroll Progress Indicator (Left Side) - Simple Pill Style */}
-        <div className="fixed left-4 md:left-8 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-50 hidden md:flex">
-            {COPY.useCase.steps.map((_, idx) => (
-                <motion.div 
-                    key={idx}
-                    className={`w-1 rounded-full bg-gray-600 transition-all duration-300`}
-                    animate={{ 
-                        height: idx === currentStep ? 32 : 8, // h-8 vs h-2
-                        backgroundColor: idx === currentStep ? "#a855f7" : "#4b5563",
-                        opacity: idx === currentStep ? 1 : 0.5
-                    }}
-                />
-            ))}
-        </div>
+          );
+        })}
       </div>
     </section>
   );
