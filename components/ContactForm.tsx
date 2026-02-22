@@ -4,25 +4,26 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { COPY } from "@/content/copy";
 import { isValidEmail } from "@/utils/validators";
+import { supabase } from "@/lib/supabase";
 
 interface ContactFormProps {
   onSuccess: () => void;
   onError: () => void;
   isMobileModal?: boolean;
+  onEmailSubmitted?: (email: string) => void;
 }
 
 export default function ContactForm({
   onSuccess,
   onError,
   isMobileModal = false,
+  onEmailSubmitted,
 }: ContactFormProps) {
   const [email, setEmail] = useState("");
   const [isPrivacyAgreed, setIsPrivacyAgreed] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const googleFormAction =
-    "https://docs.google.com/forms/d/1MjgUwdwWVM99_yye543kDS-kLvewxwwn_bgymEuVnoA/formResponse";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -47,15 +48,13 @@ export default function ContactForm({
     setIsSubmitting(true);
 
     try {
-      const formData = new FormData();
-      formData.append("entry.195494443", normalizedEmail);
+      const { error: dbError } = await supabase
+        .from("registrations")
+        .insert({ type: "early_access", email: normalizedEmail });
 
-      await fetch(googleFormAction, {
-        method: "POST",
-        mode: "no-cors",
-        body: formData,
-      });
+      if (dbError) throw dbError;
 
+      if (onEmailSubmitted) onEmailSubmitted(normalizedEmail);
       setEmail("");
       setIsPrivacyAgreed(false);
       setShowPrivacyPolicy(false);
@@ -70,7 +69,7 @@ export default function ContactForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className={`bg-gray-900/80 backdrop-blur-sm border border-purple-500/20 shadow-2xl mx-auto w-full ${
+      className={`bg-white border border-purple-100 shadow-xl shadow-purple-100/50 mx-auto w-full ${
         isMobileModal
           ? "rounded-2xl p-4 sm:p-6 max-w-md"
           : "rounded-3xl p-8 max-w-md"
@@ -83,7 +82,7 @@ export default function ContactForm({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder={COPY.preRegister.form.emailPlaceholder}
-          className={`w-full px-4 bg-gray-800 border-2 border-gray-700 text-white placeholder-gray-400 rounded-xl focus:border-purple-500 focus:bg-gray-750 focus:outline-none transition-colors ${
+          className={`w-full px-4 bg-gray-50 border-2 border-gray-200 text-gray-900 placeholder-gray-400 rounded-xl focus:border-purple-500 focus:bg-white focus:outline-none transition-colors ${
             isMobileModal ? "py-3.5 text-base" : "py-3"
           }`}
           required
@@ -91,18 +90,18 @@ export default function ContactForm({
       </div>
 
       <div className={`text-left ${isMobileModal ? "mb-4" : "mb-5"}`}>
-        <label className="flex items-center gap-2 text-xs text-gray-300 cursor-pointer">
+        <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
           <input
             type="checkbox"
             checked={isPrivacyAgreed}
             onChange={(e) => setIsPrivacyAgreed(e.target.checked)}
-            className="h-4 w-4 rounded border border-gray-600 bg-gray-900 checked:bg-purple-500 checked:border-purple-500 focus:ring-1 focus:ring-purple-400 focus:ring-offset-0"
+            className="h-4 w-4 rounded border border-gray-300 bg-white checked:bg-purple-500 checked:border-purple-500 focus:ring-1 focus:ring-purple-400 focus:ring-offset-0"
           />
           <span>
             <button
               type="button"
               onClick={() => setShowPrivacyPolicy((prev) => !prev)}
-              className="underline underline-offset-2 text-purple-300 hover:text-purple-200 transition-colors"
+              className="underline underline-offset-2 text-purple-600 hover:text-purple-700 transition-colors"
             >
               {COPY.preRegister.form.privacy.linkText}
             </button>{" "}
@@ -115,12 +114,12 @@ export default function ContactForm({
 
         {showPrivacyPolicy && (
           <motion.div
-            className="mt-2 text-[11px] text-gray-400 leading-relaxed space-y-1"
+            className="mt-2 text-[11px] text-gray-500 leading-relaxed space-y-1"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             transition={{ duration: 0.2 }}
           >
-            <p className="text-xs text-gray-200 font-medium">
+            <p className="text-xs text-gray-700 font-medium">
               {COPY.preRegister.form.privacy.title}
             </p>
             <p>{COPY.preRegister.form.privacy.purpose}</p>
@@ -144,7 +143,7 @@ export default function ContactForm({
       <motion.button
         type="submit"
         disabled={isSubmitting}
-        className={`w-full bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 text-white rounded-xl font-semibold hover:shadow-xl hover:shadow-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all ${
+        className={`w-full bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 text-white rounded-xl font-semibold hover:shadow-xl hover:shadow-purple-300/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all ${
           isMobileModal ? "py-3 text-base" : "py-2.5"
         }`}
         whileHover={!isSubmitting ? { scale: 1.02 } : {}}

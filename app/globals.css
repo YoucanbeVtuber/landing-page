@@ -38,8 +38,8 @@ body {
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--bg-dark);
-  color: var(--text-primary);
+  background-color: #ffffff;
+  color: #111827;
   min-height: 100vh;
   overflow: visible !important; /* Force prevent overflow hidden injection */
   overflow-x: clip !important;
