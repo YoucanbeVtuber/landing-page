@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Mail, Sparkles, Gift, X, Upload, CheckCircle2, ChevronRight, Copy
 } from "lucide-react";
@@ -8,6 +8,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import ContactForm from "./ContactForm";
 import { COPY } from "@/content/copy";
 import { supabase } from "@/lib/supabase";
+import {
+  DEMO_EMAIL_STORAGE_KEY,
+  RESERVED_EMAIL_STORAGE_KEY,
+  ROLE_DETAIL_STORAGE_KEY,
+  ROLE_STORAGE_KEY,
+  USER_ROLE_OPTIONS,
+  UserRole,
+} from "@/utils/roles";
 
 export default function HeroRegisterSection() {
   // ---- 출시 알림 받기 폼 상태 ----
@@ -18,6 +26,8 @@ export default function HeroRegisterSection() {
 
   // ---- 무료 샘플 신청 폼 상태 ----
   const [demoEmail, setDemoEmail] = useState("");
+  const [role, setRole] = useState<UserRole | "">("");
+  const [roleDetail, setRoleDetail] = useState("");
   const [demoFile, setDemoFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -26,6 +36,64 @@ export default function HeroRegisterSection() {
   const [useReservedEmail, setUseReservedEmail] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const cachedReservedEmail = window.localStorage.getItem(RESERVED_EMAIL_STORAGE_KEY);
+    const cachedDemoEmail = window.localStorage.getItem(DEMO_EMAIL_STORAGE_KEY);
+    const cachedRole = window.localStorage.getItem(ROLE_STORAGE_KEY) as UserRole | null;
+    const cachedRoleDetail = window.localStorage.getItem(ROLE_DETAIL_STORAGE_KEY);
+
+    if (cachedReservedEmail) {
+      setReservedEmail(cachedReservedEmail);
+    }
+
+    if (cachedDemoEmail) {
+      setDemoEmail(cachedDemoEmail);
+    }
+
+    if (cachedRole && USER_ROLE_OPTIONS.some((option) => option.value === cachedRole)) {
+      setRole(cachedRole);
+    }
+
+    if (cachedRoleDetail) {
+      setRoleDetail(cachedRoleDetail);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (reservedEmail) {
+      window.localStorage.setItem(RESERVED_EMAIL_STORAGE_KEY, reservedEmail);
+    }
+  }, [reservedEmail]);
+
+  useEffect(() => {
+    const normalizedEmail = demoEmail.trim().toLowerCase();
+    if (normalizedEmail) {
+      window.localStorage.setItem(DEMO_EMAIL_STORAGE_KEY, normalizedEmail);
+      return;
+    }
+
+    window.localStorage.removeItem(DEMO_EMAIL_STORAGE_KEY);
+  }, [demoEmail]);
+
+  useEffect(() => {
+    if (role) {
+      window.localStorage.setItem(ROLE_STORAGE_KEY, role);
+      return;
+    }
+
+    window.localStorage.removeItem(ROLE_STORAGE_KEY);
+  }, [role]);
+
+  useEffect(() => {
+    const normalizedRoleDetail = roleDetail.trim();
+    if (normalizedRoleDetail) {
+      window.localStorage.setItem(ROLE_DETAIL_STORAGE_KEY, normalizedRoleDetail);
+      return;
+    }
+
+    window.localStorage.removeItem(ROLE_DETAIL_STORAGE_KEY);
+  }, [roleDetail]);
 
   // ---- 출시 알림 핸들러 ----
   const handleSuccess = () => {
@@ -70,7 +138,17 @@ export default function HeroRegisterSection() {
 
   const handleDemoSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!effectiveDemoEmail || !demoFile) { alert("이미지와 연락처를 모두 입력해주세요."); return; }
+    const normalizedDemoEmail = effectiveDemoEmail.trim().toLowerCase();
+
+    if (!normalizedDemoEmail || !demoFile || !role) {
+      alert("이미지, 연락처, 역할을 모두 입력해주세요.");
+      return;
+    }
+
+    if (role === "other" && !roleDetail.trim()) {
+      alert("기타 역할을 입력해주세요.");
+      return;
+    }
 
     setIsUploading(true);
     try {
@@ -91,10 +169,16 @@ export default function HeroRegisterSection() {
       // 3) DB insert
       const { error: dbError } = await supabase
         .from("registrations")
-        .insert({ type: "demo_request", email: effectiveDemoEmail, image_url: imageUrl });
+        .insert({
+          type: "demo_request",
+          email: normalizedDemoEmail,
+          role,
+          role_detail: role === "other" ? roleDetail.trim() : null,
+          image_url: imageUrl,
+        });
       if (dbError) throw dbError;
 
-      setSubmittedDemoEmail(effectiveDemoEmail);
+      setSubmittedDemoEmail(normalizedDemoEmail);
       setIsDemoSubmitted(true);
     } catch (err) {
       console.error("Demo submit error:", err);
@@ -106,7 +190,6 @@ export default function HeroRegisterSection() {
   const closeDemoModal = () => {
     setIsDemoSubmitted(false);
     removeFile();
-    setDemoEmail("");
     setUseReservedEmail(false);
   };
 
@@ -369,6 +452,45 @@ export default function HeroRegisterSection() {
                       >
                         {reservedEmail}
                       </motion.div>
+                    )}
+                  </div>
+
+                  <div className="w-full mb-5">
+                    <p className="text-sm font-semibold text-gray-700 mb-2">어떤 역할로 활동하고 계신가요?</p>
+                    <div className="space-y-2">
+                      {USER_ROLE_OPTIONS.map((option) => (
+                        <label
+                          key={option.value}
+                          className={`flex items-center gap-3 w-full p-3 rounded-xl border cursor-pointer transition-all ${
+                            role === option.value
+                              ? "border-pink-300 bg-pink-50/60"
+                              : "border-gray-200 bg-white hover:border-pink-200"
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="demoRole"
+                            value={option.value}
+                            checked={role === option.value}
+                            onChange={(e) => setRole(e.target.value as UserRole)}
+                            className="h-4 w-4 border border-gray-300 text-pink-500 focus:ring-pink-400"
+                            required
+                          />
+                          <span className="text-sm font-medium text-gray-700">{option.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                    {role === "other" && (
+                      <motion.input
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        type="text"
+                        value={roleDetail}
+                        onChange={(e) => setRoleDetail(e.target.value)}
+                        placeholder="직접 입력해주세요"
+                        className="mt-3 w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-800 placeholder-gray-300 outline-none focus:border-pink-400 focus:ring-4 focus:ring-pink-50 transition-all text-sm"
+                        required
+                      />
                     )}
                   </div>
 
