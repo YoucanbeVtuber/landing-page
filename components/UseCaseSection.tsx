@@ -1,148 +1,136 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useState } from "react";
-import { COPY } from "@/content/copy";
-import UseCaseVisuals from "./UseCaseVisuals";
+import { motion } from "framer-motion";
+import { Download, Image as ImageIcon, Sparkles } from "lucide-react";
+import Image from "next/image";
+import type { Lang } from "@/content/copy";
 
-// 각 스텝별 디자인 토큰
-const stepDesigns = [
-  {
-    accent: "from-violet-500 to-purple-600",
-    accentLight: "bg-violet-50",
-    accentText: "text-violet-600",
-    accentBorder: "border-violet-100",
-    badgeLabel: "STEP 01",
-    titleSize: "text-2xl sm:text-3xl",
-    titleWeight: "font-black",
-    descStyle: "text-base",
-  },
-  {
-    accent: "from-pink-500 to-rose-500",
-    accentLight: "bg-pink-50",
-    accentText: "text-pink-600",
-    accentBorder: "border-pink-100",
-    badgeLabel: "STEP 02",
-    titleSize: "text-xl sm:text-2xl",
-    titleWeight: "font-extrabold",
-    descStyle: "text-sm",
-  },
-  {
-    accent: "from-amber-400 to-orange-500",
-    accentLight: "bg-amber-50",
-    accentText: "text-amber-600",
-    accentBorder: "border-amber-100",
-    badgeLabel: "STEP 03",
-    titleSize: "text-2xl sm:text-3xl",
-    titleWeight: "font-black",
-    descStyle: "text-base",
-  },
-  {
-    accent: "from-emerald-500 to-teal-500",
-    accentLight: "bg-emerald-50",
-    accentText: "text-emerald-600",
-    accentBorder: "border-emerald-100",
-    badgeLabel: "STEP 04",
-    titleSize: "text-xl sm:text-2xl",
-    titleWeight: "font-extrabold",
-    descStyle: "text-sm",
-  },
-];
+const UPLOAD_ART_PREVIEW_SRC = "/workflow/upload-art-preview.png";
 
-export default function UseCaseSection() {
-  const [activeCards, setActiveCards] = useState<Record<number, boolean>>({});
-  const [playTokens, setPlayTokens] = useState<Record<number, number>>({});
+function StepIcon({
+  icon: Icon,
+  index,
+  imageSrc,
+}: {
+  icon: typeof ImageIcon;
+  index: number;
+  imageSrc?: string;
+}) {
+  const [imageMissing, setImageMissing] = useState(false);
+
+  if (imageSrc && !imageMissing) {
+    return (
+      <div className="mb-10 flex h-28 w-28 items-center justify-center overflow-hidden rounded-[36px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-2 shadow-sm ring-1 ring-slate-100 transition-all duration-500 group-hover:scale-110 group-hover:shadow-xl">
+        <Image
+          src={imageSrc}
+          alt="Upload art preview"
+          width={112}
+          height={112}
+          className="h-full w-full rounded-[28px] object-contain"
+          onError={() => setImageMissing(true)}
+        />
+      </div>
+    );
+  }
 
   return (
-    <section className="relative bg-white px-4 py-24 overflow-hidden">
-      {/* 배경 장식 */}
-      <div className="absolute top-1/4 -left-32 w-64 h-64 bg-purple-100/30 rounded-full blur-[80px] pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-32 w-64 h-64 bg-pink-100/20 rounded-full blur-[80px] pointer-events-none" />
+    <div className="mb-10 flex h-24 w-24 items-center justify-center rounded-[36px] border border-slate-100 bg-slate-50 transition-all duration-500 group-hover:scale-110 group-hover:shadow-xl">
+      <Icon
+        className={
+          index === 1 ? "text-indigo-600" : index === 2 ? "text-indigo-900" : "text-slate-900"
+        }
+        size={36}
+      />
+    </div>
+  );
+}
 
-      {/* Section Header */}
-      <div className="max-w-3xl mx-auto text-center mb-20">
-        <span className="inline-block px-3 py-1 rounded-full bg-purple-50 text-purple-600 text-xs font-semibold tracking-widest uppercase mb-4">
-          How It Works
-        </span>
-        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-          {COPY.useCase.sectionTitle}
+const COPY = {
+  en: {
+    title: "How it works",
+    steps: [
+      {
+        icon: ImageIcon,
+        imageSrc: UPLOAD_ART_PREVIEW_SRC,
+        title: "Upload Art",
+        desc: "Drop your illustration into the workspace.",
+      },
+      {
+        icon: Sparkles,
+        title: "Auto-Split",
+        desc: "Our smart pipeline identifies and separates layers.",
+      },
+      {
+        icon: Download,
+        title: "Export PSD",
+        desc: "Download a rigging-ready PSD with perfect naming.",
+      },
+    ],
+  },
+  kr: {
+    title: "How it works",
+    steps: [
+      {
+        icon: ImageIcon,
+        imageSrc: UPLOAD_ART_PREVIEW_SRC,
+        title: "이미지 업로드",
+        desc: "완성된 일러스트를 워크스페이스에 업로드하세요.",
+      },
+      {
+        icon: Sparkles,
+        title: "지능형 자동 분할",
+        desc: "스마트 파이프라인이 파츠를 식별하고 자동으로 분할합니다.",
+      },
+      {
+        icon: Download,
+        title: "PSD 내보내기",
+        desc: "리깅 규격에 맞게 정리된 PSD 파일을 다운로드하세요.",
+      },
+    ],
+  },
+} as const;
+
+export default function UseCaseSection({ lang }: { lang: Lang }) {
+  const content = COPY[lang];
+
+  return (
+    <section className="bg-white py-40 border-y border-slate-50">
+      <div className="max-w-6xl mx-auto px-6 text-center">
+        <h2 className="text-4xl font-[900] mb-24 tracking-tight text-slate-900">
+          {content.title}
         </h2>
-        <p className="text-gray-500 text-lg max-w-lg mx-auto">
-          {COPY.useCase.sectionSubtitle}
-        </p>
-      </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-24 relative">
+          {content.steps.map((step, index) => {
+            const Icon = step.icon;
+            const imageSrc = "imageSrc" in step ? step.imageSrc : undefined;
 
-      <div className="mx-auto max-w-2xl space-y-6">
-        {COPY.useCase.steps.map((step, index) => {
-          const design = stepDesigns[index % stepDesigns.length];
-
-          return (
-            <motion.article
-              key={step.title}
-              className={`relative rounded-3xl border ${design.accentBorder} bg-white overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300`}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.5, ease: "easeOut", delay: index * 0.06 }}
-              onViewportEnter={() => {
-                setActiveCards((prev) => ({ ...prev, [index]: true }));
-                setPlayTokens((prev) => ({
-                  ...prev,
-                  [index]: (prev[index] ?? 0) + 1,
-                }));
-              }}
-              onViewportLeave={() => {
-                setActiveCards((prev) => ({ ...prev, [index]: false }));
-              }}
-            >
-              {/* 상단 그라디언트 스트라이프 */}
-              <div className={`h-1 w-full bg-gradient-to-r ${design.accent}`} />
-
-              <div className="p-6">
-                {/* Step header */}
-                <div className="flex items-start gap-4 mb-5">
-                  {/* 스텝 넘버 - 배지 스타일 */}
-                  <div className="flex-shrink-0 flex flex-col items-center">
-                    <div className={`inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-gradient-to-br ${design.accent} shadow-md`}>
-                      <span className="text-white text-sm font-black">{String(index + 1).padStart(2, "0")}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    {/* 레이블 */}
-                    <span className={`inline-block text-[10px] font-bold tracking-[0.18em] uppercase ${design.accentText} mb-1`}>
-                      {design.badgeLabel}
-                    </span>
-
-                    {/* 제목 - 스텝마다 크기/굵기 변주 */}
-                    <h3 className={`${design.titleSize} ${design.titleWeight} text-gray-900 leading-tight`}>
-                      {step.title}
-                    </h3>
-
-                    {/* 설명 - 왼쪽 강조선 포인트 */}
-                    <div className="mt-2 relative pl-3">
-                      <div className={`absolute left-0 top-0 bottom-0 w-0.5 rounded-full bg-gradient-to-b ${design.accent}`} />
-                      <p className={`${design.descStyle} text-gray-500 leading-relaxed whitespace-pre-line`}>
-                        {step.description}
-                      </p>
-                    </div>
-                  </div>
+            return (
+              <motion.div
+                key={step.title}
+                className="flex flex-col items-center group relative z-10"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.45, delay: index * 0.08 }}
+              >
+                <StepIcon icon={Icon} index={index} imageSrc={imageSrc} />
+                <div className="text-slate-300 font-mono text-[11px] font-bold mb-4 tracking-[0.5em]">
+                  STEP 0{index + 1}
                 </div>
-
-                {/* Visual */}
-                {activeCards[index] ? (
-                  <UseCaseVisuals
-                    key={`${index}-${playTokens[index] ?? 0}`}
-                    currentStep={index}
-                    stackMode
-                  />
-                ) : (
-                  <div className={`w-full h-[50vh] max-h-[480px] rounded-2xl border ${design.accentBorder} ${design.accentLight} opacity-40`} />
+                <h3 className="font-bold text-2xl tracking-tight text-slate-900 mb-4">
+                  {step.title}
+                </h3>
+                <p className="text-base text-slate-500 max-w-[240px] leading-relaxed font-medium">
+                  {step.desc}
+                </p>
+                {index < 2 && (
+                  <div className="hidden md:block absolute top-12 left-[80%] w-full h-[1px] border-t border-dashed border-slate-200 -z-10 opacity-60" />
                 )}
-              </div>
-            </motion.article>
-          );
-        })}
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
