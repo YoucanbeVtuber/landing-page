@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { COPY } from "@/content/copy";
+import { ArrowRight, CheckCircle2, Mail } from "lucide-react";
+import { COPY, type Lang } from "@/content/copy";
 import { isValidEmail } from "@/utils/validators";
-import { supabase } from "@/lib/supabase";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import {
   RESERVED_EMAIL_STORAGE_KEY,
   ROLE_DETAIL_STORAGE_KEY,
@@ -18,6 +19,7 @@ interface ContactFormProps {
   onError: () => void;
   isMobileModal?: boolean;
   onEmailSubmitted?: (email: string) => void;
+  lang: Lang;
 }
 
 export default function ContactForm({
@@ -25,19 +27,30 @@ export default function ContactForm({
   onError,
   isMobileModal = false,
   onEmailSubmitted,
+  lang,
 }: ContactFormProps) {
+  const copy = COPY[lang].preRegister;
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<UserRole | "">("");
   const [roleDetail, setRoleDetail] = useState("");
-  const [isPrivacyAgreed, setIsPrivacyAgreed] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const roleLabels =
+    lang === "en"
+      ? {
+          live2d_illustrator: "Live2D Illustrator",
+          rigger: "Rigger",
+          vtuber_creator: "VTuber Creator",
+          other: "Other",
+        }
+      : null;
 
   useEffect(() => {
     const cachedEmail = window.localStorage.getItem(RESERVED_EMAIL_STORAGE_KEY);
     const cachedRole = window.localStorage.getItem(ROLE_STORAGE_KEY) as UserRole | null;
     const cachedRoleDetail = window.localStorage.getItem(ROLE_DETAIL_STORAGE_KEY);
+
     if (cachedEmail) {
       setEmail(cachedEmail);
     }
@@ -72,47 +85,47 @@ export default function ContactForm({
     const normalizedEmail = email.trim().toLowerCase();
 
     if (!normalizedEmail) {
-      setError(COPY.preRegister.form.validation.emailRequired);
+      setError(copy.form.validation.emailRequired);
       return;
     }
 
     if (!isValidEmail(normalizedEmail) || normalizedEmail.length > 254) {
-      setError(COPY.preRegister.form.validation.emailInvalid);
-      return;
-    }
-
-    if (!isPrivacyAgreed) {
-      setError(COPY.preRegister.form.validation.privacyRequired);
+      setError(copy.form.validation.emailInvalid);
       return;
     }
 
     if (!role) {
-      setError("역할을 선택해주세요");
+      setError(copy.form.roleRequired);
       return;
     }
 
     if (role === "other" && !roleDetail.trim()) {
-      setError("기타 역할을 입력해주세요");
+      setError(copy.form.otherRequired);
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const { error: dbError } = await supabase
-        .from("registrations")
-        .insert({
-          type: "early_access",
-          email: normalizedEmail,
-          role,
-          role_detail: role === "other" ? roleDetail.trim() : null,
-        });
+      if (!isSupabaseConfigured || !supabase) {
+        window.localStorage.setItem(RESERVED_EMAIL_STORAGE_KEY, normalizedEmail);
+        if (onEmailSubmitted) onEmailSubmitted(normalizedEmail);
+        setShowPrivacyPolicy(false);
+        onSuccess();
+        return;
+      }
+
+      const { error: dbError } = await supabase.from("registrations").insert({
+        type: "early_access",
+        email: normalizedEmail,
+        role,
+        role_detail: role === "other" ? roleDetail.trim() : null,
+      });
 
       if (dbError) throw dbError;
 
       window.localStorage.setItem(RESERVED_EMAIL_STORAGE_KEY, normalizedEmail);
       if (onEmailSubmitted) onEmailSubmitted(normalizedEmail);
-      setIsPrivacyAgreed(false);
       setShowPrivacyPolicy(false);
       onSuccess();
     } catch {
@@ -125,36 +138,50 @@ export default function ContactForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className={`bg-white border border-purple-100 shadow-xl shadow-purple-100/50 mx-auto w-full ${
+      className={`mx-auto w-full border border-white/80 bg-white/92 shadow-[0_40px_80px_-20px_rgba(15,23,42,0.12)] ring-1 ring-slate-100/80 backdrop-blur-xl ${
         isMobileModal
-          ? "rounded-2xl p-4 sm:p-6 max-w-md"
-          : "rounded-3xl p-8 max-w-md"
+          ? "max-w-md rounded-[28px] p-4 sm:p-6"
+          : "max-w-md rounded-[40px] p-7 sm:p-8"
       }`}
     >
+      {!isSupabaseConfigured && (
+        <div className="mb-6 rounded-2xl border border-amber-200/80 bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-800">
+          {copy.form.previewMode}
+        </div>
+      )}
+
       <div className={isMobileModal ? "mb-4" : "mb-6"}>
-        <input
-          type="email"
-          name="entry.195494443"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder={COPY.preRegister.form.emailPlaceholder}
-          className={`w-full px-4 bg-gray-50 border-2 border-gray-200 text-gray-900 placeholder-gray-400 rounded-xl focus:border-purple-500 focus:bg-white focus:outline-none transition-colors ${
-            isMobileModal ? "py-3.5 text-base" : "py-3"
-          }`}
-          required
-        />
+        <div className="relative group">
+          <Mail
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 transition-colors group-focus-within:text-indigo-500"
+            size={18}
+          />
+          <input
+            type="email"
+            name="entry.195494443"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={copy.form.emailPlaceholder}
+            className={`w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 ${
+              isMobileModal ? "py-4 text-base" : "py-4 text-base font-semibold"
+            }`}
+            required
+          />
+        </div>
       </div>
 
       <div className={`text-left ${isMobileModal ? "mb-4" : "mb-6"}`}>
-        <p className="text-sm font-semibold text-gray-700 mb-2">어떤 역할로 활동하고 계신가요?</p>
-        <div className="space-y-2">
-          {USER_ROLE_OPTIONS.map((option) => (
+        <p className="mb-3 text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">
+          {copy.form.rolePrompt}
+        </p>
+        <div className="space-y-3">
+          {USER_ROLE_OPTIONS.map((option, index) => (
             <label
               key={option.value}
-              className={`flex items-center gap-3 w-full p-3 rounded-xl border cursor-pointer transition-all ${
+              className={`group flex w-full cursor-pointer items-center justify-between gap-3 rounded-[20px] border-2 p-4 transition-all ${
                 role === option.value
-                  ? "border-purple-300 bg-purple-50/60"
-                  : "border-gray-200 bg-white hover:border-purple-200"
+                  ? "border-indigo-500 bg-indigo-50/70 shadow-sm"
+                  : "border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50"
               }`}
             >
               <input
@@ -163,10 +190,31 @@ export default function ContactForm({
                 value={option.value}
                 checked={role === option.value}
                 onChange={(e) => setRole(e.target.value as UserRole)}
-                className="h-4 w-4 border border-gray-300 text-purple-500 focus:ring-purple-400"
+                className="sr-only"
                 required
               />
-              <span className="text-sm font-medium text-gray-700">{option.label}</span>
+              <div className="flex items-center gap-3">
+                <span
+                  className={`inline-flex h-8 w-8 items-center justify-center rounded-xl border text-[11px] font-black ${
+                    role === option.value
+                      ? "border-indigo-500 bg-white text-indigo-600"
+                      : "border-slate-200 bg-slate-50 text-slate-400"
+                  }`}
+                >
+                  0{index + 1}
+                </span>
+                <span className="text-sm font-semibold text-slate-700">
+                  {roleLabels ? roleLabels[option.value] : option.label}
+                </span>
+              </div>
+              <CheckCircle2
+                size={18}
+                className={
+                  role === option.value
+                    ? "text-indigo-500"
+                    : "text-slate-200 transition-colors group-hover:text-slate-300"
+                }
+              />
             </label>
           ))}
         </div>
@@ -177,59 +225,18 @@ export default function ContactForm({
             type="text"
             value={roleDetail}
             onChange={(e) => setRoleDetail(e.target.value)}
-            placeholder="직접 입력해주세요"
-            className={`mt-3 w-full px-4 bg-gray-50 border-2 border-gray-200 text-gray-900 placeholder-gray-400 rounded-xl focus:border-purple-500 focus:bg-white focus:outline-none transition-colors ${
-              isMobileModal ? "py-3.5 text-base" : "py-3"
+            placeholder={copy.form.otherPlaceholder}
+            className={`mt-3 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 ${
+              isMobileModal ? "py-4 text-base" : "py-4 text-base"
             }`}
             required
           />
         )}
       </div>
 
-      <div className={`text-left ${isMobileModal ? "mb-4" : "mb-5"}`}>
-        <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={isPrivacyAgreed}
-            onChange={(e) => setIsPrivacyAgreed(e.target.checked)}
-            className="h-4 w-4 rounded border border-gray-300 bg-white checked:bg-purple-500 checked:border-purple-500 focus:ring-1 focus:ring-purple-400 focus:ring-offset-0"
-          />
-          <span>
-            <button
-              type="button"
-              onClick={() => setShowPrivacyPolicy((prev) => !prev)}
-              className="underline underline-offset-2 text-purple-600 hover:text-purple-700 transition-colors"
-            >
-              {COPY.preRegister.form.privacy.linkText}
-            </button>{" "}
-            {COPY.preRegister.form.privacy.label.replace(
-              COPY.preRegister.form.privacy.linkText,
-              ""
-            )}
-          </span>
-        </label>
-
-        {showPrivacyPolicy && (
-          <motion.div
-            className="mt-2 text-[11px] text-gray-500 leading-relaxed space-y-1"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            transition={{ duration: 0.2 }}
-          >
-            <p className="text-xs text-gray-700 font-medium">
-              {COPY.preRegister.form.privacy.title}
-            </p>
-            <p>{COPY.preRegister.form.privacy.purpose}</p>
-            <p>{COPY.preRegister.form.privacy.items}</p>
-            <p>{COPY.preRegister.form.privacy.retention}</p>
-            <p>{COPY.preRegister.form.privacy.rights}</p>
-          </motion.div>
-        )}
-      </div>
-
       {error && (
         <motion.p
-          className={`text-red-500 ${isMobileModal ? "text-xs mb-3" : "text-sm mb-4"}`}
+          className={`text-red-500 ${isMobileModal ? "mb-3 text-xs" : "mb-4 text-sm"}`}
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -240,14 +247,43 @@ export default function ContactForm({
       <motion.button
         type="submit"
         disabled={isSubmitting}
-        className={`w-full bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 text-white rounded-xl font-semibold hover:shadow-xl hover:shadow-purple-300/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all ${
-          isMobileModal ? "py-3 text-base" : "py-2.5"
+        className={`flex w-full items-center justify-center gap-2 rounded-2xl bg-[#111827] font-black text-white shadow-2xl transition-all hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 ${
+          isMobileModal ? "py-4 text-base" : "py-4 text-lg"
         }`}
         whileHover={!isSubmitting ? { scale: 1.02 } : {}}
         whileTap={!isSubmitting ? { scale: 0.98 } : {}}
       >
-        {isSubmitting ? "처리 중..." : COPY.preRegister.form.submit}
+        <span>{isSubmitting ? copy.form.loading : copy.form.submit}</span>
+        {!isSubmitting && <ArrowRight size={18} className="text-indigo-300" />}
       </motion.button>
+
+      <div className="mt-3 text-left">
+        <p className="text-[11px] leading-5 text-gray-500">
+          {copy.form.privacy.implicitConsent}{" "}
+          <button
+            type="button"
+            onClick={() => setShowPrivacyPolicy((prev) => !prev)}
+            className="underline underline-offset-2 text-purple-600 hover:text-purple-700 transition-colors"
+          >
+            {copy.form.privacy.linkText}
+          </button>
+        </p>
+
+        {showPrivacyPolicy && (
+          <motion.div
+            className="mt-2 space-y-1 text-[11px] leading-relaxed text-gray-500"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            transition={{ duration: 0.2 }}
+          >
+            <p className="text-xs font-medium text-gray-700">{copy.form.privacy.title}</p>
+            <p>{copy.form.privacy.purpose}</p>
+            <p>{copy.form.privacy.items}</p>
+            <p>{copy.form.privacy.retention}</p>
+            <p>{copy.form.privacy.rights}</p>
+          </motion.div>
+        )}
+      </div>
     </form>
   );
 }

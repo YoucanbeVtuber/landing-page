@@ -1,13 +1,42 @@
+"use client";
+
+import { useState } from "react";
+import { Languages } from "lucide-react";
 import HeroRegisterSection from "@/components/HeroRegisterSection";
+import PrecisionSection from "@/components/PrecisionSection";
 import UseCaseSection from "@/components/UseCaseSection";
 import PreRegisterSection from "@/components/PreRegisterSection";
+import type { Lang } from "@/content/copy";
 
 export default function Home() {
+  const [lang, setLang] = useState<Lang>("en");
+
   return (
     <main className="overflow-x-hidden">
-      <HeroRegisterSection />
-      <UseCaseSection />
-      <PreRegisterSection />
+      <div className="fixed right-6 top-6 z-[70]">
+        <div className="flex items-center gap-1 rounded-full border border-slate-200 bg-white/90 p-1 text-[11px] font-bold text-slate-600 shadow-sm backdrop-blur-md">
+          <Languages size={14} />
+          {(["en", "kr"] as const).map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => setLang(option)}
+              className={`rounded-full px-3 py-1.5 transition-all ${
+                lang === option
+                  ? "bg-slate-900 text-white shadow-sm"
+                  : "text-slate-500 hover:bg-slate-100 hover:text-slate-800"
+              }`}
+            >
+              {option.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <HeroRegisterSection lang={lang} />
+      <UseCaseSection lang={lang} />
+      <PrecisionSection lang={lang} />
+      <PreRegisterSection lang={lang} />
     </main>
   );
 }

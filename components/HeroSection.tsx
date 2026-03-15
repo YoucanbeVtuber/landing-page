@@ -2,11 +2,32 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { COPY } from "@/content/copy";
+import { COPY, type Lang } from "@/content/copy";
 import LayerStack from "./LayerStack";
 import ContactForm from "./ContactForm";
 
-export default function HeroSection() {
+const TEXT = {
+  en: {
+    title: "Manual splitting is\nnow a choice.",
+    subtitle:
+      "Reduce repetitive Live2D preparation work and join the waiting list for launch updates.",
+    cta: "Join early access",
+    note: "Launch updates with free credits at release",
+    closeModal: "Close modal",
+  },
+  kr: {
+    title: "파츠 분할은 이제\n선택입니다.",
+    subtitle:
+      "반복적인 Live2D 준비 작업을 줄이고 출시 알림과 함께 얼리 액세스를 받아보세요.",
+    cta: "얼리 액세스 신청",
+    note: "출시 알림과 함께 무료 크레딧을 드립니다",
+    closeModal: "모달 닫기",
+  },
+} as const;
+
+export default function HeroSection({ lang = "en" }: { lang?: Lang }) {
+  const copy = COPY[lang].preRegister;
+  const text = TEXT[lang];
   const sectionRef = useRef<HTMLElement>(null);
   const [showForm, setShowForm] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -57,7 +78,7 @@ export default function HeroSection() {
 
   // Handle form success
   const handleSuccess = () => {
-    setToastMessage(COPY.preRegister.form.success);
+    setToastMessage(copy.form.success);
     setShowToast(true);
     setShowForm(false);
 
@@ -68,7 +89,7 @@ export default function HeroSection() {
 
   // Handle form error
   const handleError = () => {
-    setToastMessage(COPY.preRegister.form.error);
+    setToastMessage(copy.form.error);
     setShowToast(true);
 
     setTimeout(() => {
@@ -91,10 +112,10 @@ export default function HeroSection() {
           transition={{ duration: 0.8 }}
         >
           <h1 className="text-hero-mobile md:text-hero font-bold mb-6 whitespace-pre-line text-white">
-            {COPY.hero.title}
+            {text.title}
           </h1>
           <p className="text-lg md:text-xl text-purple-200 whitespace-pre-line max-w-2xl mx-auto mb-8">
-            {COPY.hero.subtitle}
+            {text.subtitle}
           </p>
 
           {/* Pre-registration CTA button or Form */}
@@ -109,10 +130,10 @@ export default function HeroSection() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.6 }}
               >
-                얼리 액세스 신청
+                {text.cta}
               </motion.button>
               <p className="text-xs md:text-sm text-purple-100/80">
-                출시 알림과 함께 무료 크레딧을 드립니다
+                {text.note}
               </p>
             </div>
           ) : (
@@ -122,7 +143,7 @@ export default function HeroSection() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
               >
-                <ContactForm onSuccess={handleSuccess} onError={handleError} />
+                <ContactForm onSuccess={handleSuccess} onError={handleError} lang={lang} />
               </motion.div>
             )
           )}
@@ -180,7 +201,7 @@ export default function HeroSection() {
                 type="button"
                 onClick={() => setShowForm(false)}
                 className="absolute right-3 top-3 z-10 h-8 w-8 rounded-full bg-black/40 text-white text-lg leading-none"
-                aria-label="모달 닫기"
+                aria-label={text.closeModal}
               >
                 ×
               </button>
@@ -188,6 +209,7 @@ export default function HeroSection() {
                 onSuccess={handleSuccess}
                 onError={handleError}
                 isMobileModal
+                lang={lang}
               />
             </motion.div>
           </div>
