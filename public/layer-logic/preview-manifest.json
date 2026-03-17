@@ -1,0 +1,111 @@
+{
+  "summary": {
+    "jobId": "job_demo_head_001",
+    "taskId": "LC_FACE_001",
+    "title": "Ari Head Split Preview",
+    "status": "preview_ready",
+    "createdAt": "2026-03-15T10:00:00Z"
+  },
+  "canvasSize": [1024, 1024],
+  "originalAssetPath": "/mock/job_demo_head_001/original.svg",
+  "compositeAssetPath": null,
+  "layers": [
+    {
+      "id": "hair_back",
+      "name": "Hair_Back",
+      "assetPath": "/mock/job_demo_head_001/hair-back.svg",
+      "zIndex": 10,
+      "visibleByDefault": true,
+      "group": "Hair",
+      "folderPath": "Character/Hair"
+    },
+    {
+      "id": "hair_side_l",
+      "name": "Hair_Side_L",
+      "assetPath": "/mock/job_demo_head_001/hair-side-l.svg",
+      "zIndex": 20,
+      "visibleByDefault": true,
+      "group": "Hair",
+      "folderPath": "Character/Hair"
+    },
+    {
+      "id": "hair_side_r",
+      "name": "Hair_Side_R",
+      "assetPath": "/mock/job_demo_head_001/hair-side-r.svg",
+      "zIndex": 21,
+      "visibleByDefault": true,
+      "group": "Hair",
+      "folderPath": "Character/Hair"
+    },
+    {
+      "id": "face_base",
+      "name": "Face_Base",
+      "assetPath": "/mock/job_demo_head_001/face-base.svg",
+      "zIndex": 30,
+      "visibleByDefault": true,
+      "group": "Face",
+      "folderPath": "Character/Face"
+    },
+    {
+      "id": "blush_left",
+      "name": "Face_Blush_L",
+      "assetPath": "/mock/job_demo_head_001/blush-left.svg",
+      "zIndex": 32,
+      "visibleByDefault": true,
+      "group": "Face",
+      "folderPath": "Character/Face",
+      "blendMode": "overlay"
+    },
+    {
+      "id": "blush_right",
+      "name": "Face_Blush_R",
+      "assetPath": "/mock/job_demo_head_001/blush-right.svg",
+      "zIndex": 33,
+      "visibleByDefault": true,
+      "group": "Face",
+      "folderPath": "Character/Face",
+      "blendMode": "overlay"
+    },
+    {
+      "id": "eye_left",
+      "name": "Eye_White_L",
+      "assetPath": "/mock/job_demo_head_001/eye-left.svg",
+      "zIndex": 40,
+      "visibleByDefault": true,
+      "group": "Eyes",
+      "folderPath": "Character/Face"
+    },
+    {
+      "id": "eye_right",
+      "name": "Eye_White_R",
+      "assetPath": "/mock/job_demo_head_001/eye-right.svg",
+      "zIndex": 41,
+      "visibleByDefault": true,
+      "group": "Eyes",
+      "folderPath": "Character/Face"
+    },
+    {
+      "id": "mouth_bundle",
+      "name": "Mouth_Base",
+      "assetPath": "/mock/job_demo_head_001/mouth.svg",
+      "zIndex": 50,
+      "visibleByDefault": true,
+      "group": "Mouth",
+      "folderPath": "Character/Mouth"
+    },
+    {
+      "id": "hair_front",
+      "name": "Hair_Front",
+      "assetPath": "/mock/job_demo_head_001/hair-front.svg",
+      "zIndex": 60,
+      "visibleByDefault": true,
+      "group": "Hair",
+      "folderPath": "Character/Hair"
+    }
+  ],
+  "payment": {
+    "locked": true,
+    "checkoutUrl": null,
+    "downloadToken": null
+  }
+}

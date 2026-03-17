@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Languages } from "lucide-react";
 import HeroRegisterSection from "@/components/HeroRegisterSection";
+import LayerLogicSection from "@/components/LayerLogicSection";
 import PrecisionSection from "@/components/PrecisionSection";
 import UseCaseSection from "@/components/UseCaseSection";
 import PreRegisterSection from "@/components/PreRegisterSection";
@@ -34,8 +35,9 @@ export default function Home() {
       </div>
 
       <HeroRegisterSection lang={lang} />
-      <UseCaseSection lang={lang} />
+      <LayerLogicSection lang={lang} />
       <PrecisionSection lang={lang} />
+      <UseCaseSection lang={lang} />
       <PreRegisterSection lang={lang} />
     </main>
   );
