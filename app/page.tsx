@@ -3,13 +3,15 @@
 import { useState } from "react";
 import { Languages } from "lucide-react";
 import HeroRegisterSection from "@/components/HeroRegisterSection";
+import LayerLogicSection from "@/components/LayerLogicSection";
 import PrecisionSection from "@/components/PrecisionSection";
 import UseCaseSection from "@/components/UseCaseSection";
+import CreatorsVoiceSection from "@/components/CreatorsVoiceSection";
 import PreRegisterSection from "@/components/PreRegisterSection";
 import type { Lang } from "@/content/copy";
 
 export default function Home() {
-  const [lang, setLang] = useState<Lang>("en");
+  const [lang, setLang] = useState<Lang>("kr");
 
   return (
     <main className="overflow-x-hidden">
@@ -34,8 +36,10 @@ export default function Home() {
       </div>
 
       <HeroRegisterSection lang={lang} />
-      <UseCaseSection lang={lang} />
+      <LayerLogicSection lang={lang} />
       <PrecisionSection lang={lang} />
+      <UseCaseSection lang={lang} />
+      <CreatorsVoiceSection lang={lang} />
       <PreRegisterSection lang={lang} />
     </main>
   );
