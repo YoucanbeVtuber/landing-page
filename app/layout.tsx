@@ -10,9 +10,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "LIVINGCEl - AI-Powered Layer Splitting for Live2D",
+  title: "LivingCel | 리깅 노가다 끝, 원클릭 레이어 분리",
   description:
-    "Transform your artwork into riggable layers with AI. Upload, split, refine, and download PSD files ready for Live2D rigging.",
+    "일러스트를 업로드하고 바로 리깅하세요. 가장 번거로운 레이어 분리 작업을 LivingCel이 대신합니다.",
 };
 
 export default function RootLayout({
