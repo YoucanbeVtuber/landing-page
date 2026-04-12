@@ -243,6 +243,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
     <section
       id="hero-section"
       className="relative overflow-hidden bg-[#f7f8fc] px-5 pb-28 pt-28 sm:pt-36"
+      style={{ fontFamily: "var(--font-hanken), system-ui, sans-serif" }}
     >
       {/* ambient glows */}
       <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-violet-200/40 blur-[130px]" />
@@ -258,7 +259,10 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.65, ease: EASE }}
         >
-          <h1 className="text-5xl font-[900] leading-[1.08] tracking-tight text-slate-950 sm:text-6xl lg:text-7xl">
+          <h1
+            className="text-5xl font-[900] leading-[1.08] tracking-tight text-slate-950 sm:text-6xl lg:text-7xl"
+            style={{ fontFamily: "var(--font-gloock), var(--font-noto-serif-kr), Georgia, serif" }}
+          >
             {t.headline1}
             <br />
             {t.headline2}
@@ -446,7 +450,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                     <motion.button
                       type="button"
                       onClick={() => setStep("contact")}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#111827] py-4 text-base font-black text-white shadow-lg transition-all hover:bg-slate-800"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#1a1025] py-4 text-base font-black text-white shadow-lg transition-all hover:bg-[#261535]"
                       whileHover={{ scale: 1.015 }}
                       whileTap={{ scale: 0.985 }}
                     >
@@ -539,7 +543,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                     <motion.button
                       type="submit"
                       disabled={isSubmitting}
-                      className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#111827] py-4 text-base font-black text-white shadow-lg transition-all hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#1a1025] py-4 text-base font-black text-white shadow-lg transition-all hover:bg-[#261535] disabled:cursor-not-allowed disabled:opacity-50"
                       whileHover={!isSubmitting ? { scale: 1.015 } : {}}
                       whileTap={!isSubmitting ? { scale: 0.985 } : {}}
                     >
