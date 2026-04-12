@@ -19,22 +19,18 @@ const TEXT = {
     dropHint: "PNG · JPG · WEBP · up to 20 MB",
     uploading: "Uploading…",
     // verify
-    verifyTitle: "Can we process this?",
-    verifySub: "LivingCel only separates cel-shaded character art. Other file types can't be processed.",
-    verifyReferenceLabel: "What we can process",
+    verifyTitle: "Can this illustration be used as a VTuber model?",
+    verifyReferenceLabel: "Accepted example",
     verifyYourLabel: "Your upload",
     verifyChecks: [
-      "Cel-shaded or anime-style character",
-      "Transparent or plain white background",
-      "Full body or bust shot",
-      "Clear linework with flat colors",
+      "Character facing forward",
+      "Bust shot or full body",
+      "High-quality anime-style illustration",
     ],
-    verifyWarnings: [
-      "Real photographs — cannot be separated",
-      "Complex backgrounds — separation fails",
-    ],
-    verifyConfirm: "Yes, this is the right type — request separation",
-    verifyRetry: "Upload a different file",
+    verifyPoseCheckbox: "My pose doesn't match the above — please adjust with AI first, then separate.",
+    verifyDisclaimer: "※ If conditions are not met, results may be limited or not processed.",
+    verifyConfirm: "Yes, this qualifies — request separation",
+    verifyRetry: "Try a different image",
     // contact
     uploadSuccessHeadline: "Received.",
     uploadSuccessBody: "In 24 hours, you'll have a PSD ready to rig.",
@@ -66,21 +62,17 @@ const TEXT = {
     dropHint: "PNG · JPG · WEBP · 최대 20 MB",
     uploading: "업로드 중…",
     // verify
-    verifyTitle: "이 이미지, 처리할 수 있을까요?",
-    verifySub: "LivingCel은 셀화 캐릭터 일러스트만 분리할 수 있습니다. 다른 유형은 처리가 어렵거나 불가합니다.",
-    verifyReferenceLabel: "처리 가능한 이미지",
+    verifyTitle: "이 이미지는 버튜버 모델로 사용할 수 있나요?",
+    verifyReferenceLabel: "처리 가능한 예시",
     verifyYourLabel: "업로드한 이미지",
     verifyChecks: [
-      "셀화 또는 애니메이션 스타일 캐릭터",
-      "투명 또는 흰 단색 배경",
-      "전신 또는 상반신",
-      "선명한 선화, 플랫 컬러",
+      "정면을 바라보는 캐릭터",
+      "상반신, 혹은 전신",
+      "애니메이션 스타일 고화질 일러스트",
     ],
-    verifyWarnings: [
-      "실사 사진 — 분리 불가",
-      "배경 포함 이미지 — 분리 실패 가능",
-    ],
-    verifyConfirm: "네, 이런 이미지입니다. 분리 신청하기",
+    verifyPoseCheckbox: "자세가 위 조건에 맞지 않아도 괜찮습니다. AI로 자세를 조정한 후 파츠 분리를 진행해 주세요.",
+    verifyDisclaimer: "※ 조건을 만족하지 않는 경우, 결과가 제한되거나 처리되지 않을 수 있습니다.",
+    verifyConfirm: "네, 해당됩니다. 분리 신청하기",
     verifyRetry: "다른 이미지로 다시 시도하기",
     // contact
     uploadSuccessHeadline: "접수됐습니다.",
@@ -113,21 +105,17 @@ const TEXT = {
     dropHint: "PNG · JPG · WEBP · 20 MB まで",
     uploading: "アップロード中…",
     // verify
-    verifyTitle: "この画像、処理できますか？",
-    verifySub: "LivingCelはセルシェードキャラクターイラストのみ分割できます。他の形式は処理できません。",
-    verifyReferenceLabel: "処理可能な画像",
+    verifyTitle: "このイラストはVTuberモデルに使えますか？",
+    verifyReferenceLabel: "処理可能な例",
     verifyYourLabel: "アップロードした画像",
     verifyChecks: [
-      "セルシェードまたはアニメスタイルのキャラクター",
-      "透明または白い単色背景",
-      "全身または上半身",
-      "クリアな線画、フラットカラー",
+      "正面を向いているキャラクター",
+      "上半身、または全身",
+      "アニメスタイルの高品質イラスト",
     ],
-    verifyWarnings: [
-      "実写写真 — 分割不可",
-      "背景付きイラスト — 分割失敗の可能性",
-    ],
-    verifyConfirm: "はい、この種類です。分割を依頼する",
+    verifyPoseCheckbox: "ポーズが条件に合わなくても大丈夫です。AIでポーズを調整してから分割してください。",
+    verifyDisclaimer: "※ 条件を満たさない場合、結果が制限されるか処理されない場合があります。",
+    verifyConfirm: "はい、該当します。分割を依頼する",
     verifyRetry: "別の画像で再試行",
     // contact
     uploadSuccessHeadline: "受け取りました。",
@@ -173,6 +161,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
   const [contact, setContact] = useState("");
   const [contactErr, setContactErr] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [poseConversion, setPoseConversion] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -225,7 +214,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
         if (stErr) throw stErr;
         const { error: dbErr } = await supabase
           .from("upload_requests")
-          .insert({ contact: contact.trim(), image_path: name, status: "pending" });
+          .insert({ contact: contact.trim(), image_path: name, status: "pending", pose_conversion: poseConversion });
         if (dbErr) throw dbErr;
       }
       setStep("done");
@@ -236,7 +225,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
     }
   };
 
-  const reset = () => { clearFile(); setContact(""); setContactErr(""); };
+  const reset = () => { clearFile(); setContact(""); setContactErr(""); setPoseConversion(false); };
 
   // ───────────────────────────────────────────────────────────────────────────
   return (
@@ -372,7 +361,6 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                   {/* ── header ── */}
                   <div className="border-b border-slate-100 px-7 py-6">
                     <p className="text-lg font-black text-slate-900">{t.verifyTitle}</p>
-                    <p className="mt-1 text-sm text-slate-400">{t.verifySub}</p>
                   </div>
 
                   {/* ── comparison grid ──
@@ -396,16 +384,6 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                         <span className="absolute right-2 top-2 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-black text-white">
                           ✓
                         </span>
-                      </div>
-
-                      {/* bad mini examples */}
-                      <div className="mt-4 space-y-2">
-                        {t.verifyWarnings.map((w) => (
-                          <div key={w} className="flex items-start gap-2 rounded-xl bg-red-50/80 px-3 py-2">
-                            <span className="mt-px shrink-0 text-[11px] font-black text-red-400">✕</span>
-                            <p className="text-[11px] leading-snug text-slate-500">{w}</p>
-                          </div>
-                        ))}
                       </div>
                     </div>
 
@@ -445,8 +423,23 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                     </div>
                   </div>
 
+                  {/* ── Pose conversion checkbox ── */}
+                  <div className="px-6 pt-4">
+                    <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/60 px-4 py-3 transition-colors hover:bg-indigo-50/40">
+                      <input
+                        type="checkbox"
+                        checked={poseConversion}
+                        onChange={(e) => setPoseConversion(e.target.checked)}
+                        className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-indigo-500"
+                      />
+                      <span className="text-[12px] leading-snug text-slate-500">
+                        {t.verifyPoseCheckbox}
+                      </span>
+                    </label>
+                  </div>
+
                   {/* ── CTAs ── */}
-                  <div className="px-6 pb-7 pt-5">
+                  <div className="px-6 pb-5 pt-4">
                     <motion.button
                       type="button"
                       onClick={() => setStep("contact")}
@@ -465,6 +458,9 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                       <ChevronLeft size={14} />
                       {t.verifyRetry}
                     </button>
+                    <p className="mt-4 text-center text-[11px] leading-relaxed text-slate-300">
+                      {t.verifyDisclaimer}
+                    </p>
                   </div>
 
                 </div>
