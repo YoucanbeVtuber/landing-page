@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Gloock, Hanken_Grotesk, Noto_Serif_KR } from "next/font/google";
 import "./globals.css";
 import "./main-override.css";
 
@@ -7,6 +7,27 @@ const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter",
+});
+
+const gloock = Gloock({
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+  variable: "--font-gloock",
+});
+
+const hanken = Hanken_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+  variable: "--font-hanken",
+});
+
+const notoSerifKR = Noto_Serif_KR({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
+  variable: "--font-noto-serif-kr",
 });
 
 export const metadata: Metadata = {
@@ -21,7 +42,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${gloock.variable} ${hanken.variable} ${notoSerifKR.variable}`} suppressHydrationWarning>
       <body className="antialiased bg-white text-gray-900">
         {children}
         {/* Footer */}

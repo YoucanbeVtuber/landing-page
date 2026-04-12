@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Languages } from "lucide-react";
-import HeroRegisterSection from "@/components/HeroRegisterSection";
+import HeroUploadSection from "@/components/HeroUploadSection";
 import LayerLogicSection from "@/components/LayerLogicSection";
 import PrecisionSection from "@/components/PrecisionSection";
 import UseCaseSection from "@/components/UseCaseSection";
@@ -35,7 +35,7 @@ export default function Home() {
         </div>
       </div>
 
-      <HeroRegisterSection lang={lang} />
+      <HeroUploadSection lang={lang} />
       <LayerLogicSection lang={lang} />
       <PrecisionSection lang={lang} />
       <UseCaseSection lang={lang} />
