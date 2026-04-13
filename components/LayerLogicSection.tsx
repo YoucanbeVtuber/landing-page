@@ -463,9 +463,9 @@ export default function LayerLogicSection({ lang }: { lang: Lang }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.5, delay: 0.06 }}
-            className="overflow-hidden rounded-[28px] border border-slate-200 bg-slate-950 text-white shadow-[0_24px_60px_-32px_rgba(15,23,42,0.45)] lg:rounded-[40px] lg:shadow-[0_36px_80px_-36px_rgba(15,23,42,0.45)]"
+            className="overflow-hidden rounded-[28px] border border-slate-200 bg-slate-950 text-white shadow-[0_24px_60px_-32px_rgba(15,23,42,0.45)] lg:sticky lg:top-24 lg:flex lg:max-h-[calc(100vh-7rem)] lg:flex-col lg:rounded-[40px] lg:shadow-[0_36px_80px_-36px_rgba(15,23,42,0.45)]"
           >
-            <div className="border-b border-white/10 px-4 py-4 lg:px-6 lg:py-6">
+            <div className="shrink-0 border-b border-white/10 px-4 py-4 lg:px-6 lg:py-6">
               <div className="text-[10px] font-black uppercase tracking-[0.28em] text-[oklch(62%_0.19_315)]">
                 {text.treeLabel}
               </div>
@@ -475,7 +475,7 @@ export default function LayerLogicSection({ lang }: { lang: Lang }) {
               <p className="mt-2 hidden max-w-md text-sm leading-7 text-slate-400 lg:block">{text.treeBody}</p>
             </div>
 
-            <div className="px-3 py-3 lg:px-4 lg:py-4">
+            <div className="flex min-h-0 flex-1 flex-col px-3 py-3 lg:px-4 lg:py-4">
               <button
                 type="button"
                 onMouseEnter={() => setHoveredLayerId(FULL_PREVIEW_ID)}
@@ -497,7 +497,7 @@ export default function LayerLogicSection({ lang }: { lang: Lang }) {
               </button>
 
               <div
-                className="mt-3 max-h-[42vh] overflow-y-auto rounded-[22px] border border-white/10 bg-white/5 p-2 overscroll-contain lg:max-h-none lg:rounded-[28px] lg:p-3"
+                className="mt-3 max-h-[52vh] min-h-0 flex-1 overflow-y-auto rounded-[22px] border border-white/10 bg-white/5 p-2 overscroll-contain lg:max-h-none lg:rounded-[28px] lg:p-3"
                 onMouseLeave={() => setHoveredLayerId(null)}
               >
                 {folderSections.length === 0 ? (
