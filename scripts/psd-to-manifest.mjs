@@ -138,7 +138,6 @@ for (let i = 0; i < allEntries.length; i++) {
     continue;
   }
 
-  // Extract the layer's bounding box from the full-canvas buffer
   const { top, left, width, height } = layer;
 
   // Clamp to canvas bounds (paranoia)
@@ -157,10 +156,13 @@ for (let i = 0; i < allEntries.length; i++) {
   const assetFilename = `${id}.png`;
   const assetPath = `./assets/${assetFilename}`;
 
+  const localX = x0 - left;
+  const localY = y0 - top;
+
   await sharp(Buffer.from(rgba), {
-    raw: { width: psd.width, height: psd.height, channels: 4 },
+    raw: { width: layer.width, height: layer.height, channels: 4 },
   })
-    .extract({ left: x0, top: y0, width: extractW, height: extractH })
+    .extract({ left: localX, top: localY, width: extractW, height: extractH })
     .png({ compressionLevel: 9 })
     .toFile(resolve(assetsDir, assetFilename));
 
