@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ArrowRight, CheckCircle2, Loader2, X, ChevronLeft } from "lucide-react";
 import Image from "next/image";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
@@ -14,12 +14,12 @@ const TEXT = {
     headline2: "rig-ready PSD.",
     sub: "Automated part separation so anyone can prepare for their VTuber debut, quickly and easily.",
     // idle
-    dropTitle: "Drop your illustration here",
+    dropTitle: "Drop your VTuber character illustration",
     dropClick: "or click to browse",
     dropHint: "PNG · JPG · WEBP · up to 20 MB",
     uploading: "Uploading…",
     // verify
-    verifyTitle: "Can this illustration be used as a VTuber model?",
+    verifyTitle: "Hold on — ready to proceed?",
     verifyReferenceLabel: "Accepted example",
     verifyYourLabel: "Your upload",
     verifyChecks: [
@@ -27,9 +27,8 @@ const TEXT = {
       "Bust shot or full body",
       "High-quality anime-style illustration",
     ],
-    verifyPoseCheckbox: "My pose doesn't match the above — please adjust with AI first, then separate.",
     verifyDisclaimer: "※ If conditions are not met, results may be limited or not processed.",
-    verifyConfirm: "Yes, this qualifies — request separation",
+    verifyConfirm: "Request separation",
     verifyRetry: "Try a different image",
     // contact
     uploadSuccessHeadline: "Received.",
@@ -51,18 +50,19 @@ const TEXT = {
     previewBanner: "Preview mode — submissions won't be saved.",
     // video
     videoLabel: "See how it works",
+    removeLabel: "Remove",
   },
   kr: {
     headline1: "일러스트를",
     headline2: "리깅용 PSD로.",
     sub: "자동 파츠 분리로 누구나 쉽고 빠르게 버튜버 데뷔를 준비할 수 있습니다.",
     // idle
-    dropTitle: "일러스트를 여기 놓으세요",
+    dropTitle: "버츄얼 캐릭터 일러스트를 올려주세요",
     dropClick: "또는 클릭하여 파일 선택",
     dropHint: "PNG · JPG · WEBP · 최대 20 MB",
     uploading: "업로드 중…",
     // verify
-    verifyTitle: "이 이미지는 버튜버 모델로 사용할 수 있나요?",
+    verifyTitle: "잠깐! 이대로 진행할까요?",
     verifyReferenceLabel: "처리 가능한 예시",
     verifyYourLabel: "업로드한 이미지",
     verifyChecks: [
@@ -70,9 +70,8 @@ const TEXT = {
       "상반신, 혹은 전신",
       "애니메이션 스타일 고화질 일러스트",
     ],
-    verifyPoseCheckbox: "자세가 위 조건에 맞지 않아도 괜찮습니다. AI로 자세를 조정한 후 파츠 분리를 진행해 주세요.",
     verifyDisclaimer: "※ 조건을 만족하지 않는 경우, 결과가 제한되거나 처리되지 않을 수 있습니다.",
-    verifyConfirm: "네, 해당됩니다. 분리 신청하기",
+    verifyConfirm: "분리 신청하기",
     verifyRetry: "다른 이미지로 다시 시도하기",
     // contact
     uploadSuccessHeadline: "접수됐습니다.",
@@ -94,18 +93,19 @@ const TEXT = {
     previewBanner: "미리보기 모드 — Supabase 미설정으로 제출 내용이 저장되지 않습니다.",
     // video
     videoLabel: "작동 방식 미리보기",
+    removeLabel: "제거",
   },
   jp: {
     headline1: "イラストを",
     headline2: "リギング用PSDへ。",
     sub: "自動パーツ分離で、誰でも簡単・スピーディにVTuberデビューの準備ができます。",
     // idle
-    dropTitle: "イラストをここにドロップ",
+    dropTitle: "バーチャルキャラクターのイラストをドロップ",
     dropClick: "またはクリックして選択",
     dropHint: "PNG · JPG · WEBP · 20 MB まで",
     uploading: "アップロード中…",
     // verify
-    verifyTitle: "このイラストはVTuberモデルに使えますか？",
+    verifyTitle: "確認！このまま進めますか？",
     verifyReferenceLabel: "処理可能な例",
     verifyYourLabel: "アップロードした画像",
     verifyChecks: [
@@ -113,9 +113,8 @@ const TEXT = {
       "上半身、または全身",
       "アニメスタイルの高品質イラスト",
     ],
-    verifyPoseCheckbox: "ポーズが条件に合わなくても大丈夫です。AIでポーズを調整してから分割してください。",
     verifyDisclaimer: "※ 条件を満たさない場合、結果が制限されるか処理されない場合があります。",
-    verifyConfirm: "はい、該当します。分割を依頼する",
+    verifyConfirm: "分割を依頼する",
     verifyRetry: "別の画像で再試行",
     // contact
     uploadSuccessHeadline: "受け取りました。",
@@ -137,6 +136,7 @@ const TEXT = {
     previewBanner: "プレビューモード — Supabase 未設定のため送信内容は保存されません。",
     // video
     videoLabel: "動作イメージ",
+    removeLabel: "削除",
   },
 } as const;
 
@@ -151,6 +151,8 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 // ─── component ─────────────────────────────────────────────────────────────────
 export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
   const t = TEXT[lang] ?? TEXT.en;
+  const shouldReduceMotion = useReducedMotion() ?? false;
+  const dur = (ms: number) => (shouldReduceMotion ? 0 : ms);
 
   const [step, setStep] = useState<Step>("idle");
   const [isDragging, setIsDragging] = useState(false);
@@ -161,7 +163,6 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
   const [contact, setContact] = useState("");
   const [contactErr, setContactErr] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [poseConversion, setPoseConversion] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -214,7 +215,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
         if (stErr) throw stErr;
         const { error: dbErr } = await supabase
           .from("upload_requests")
-          .insert({ contact: contact.trim(), image_path: name, status: "pending", pose_conversion: poseConversion });
+          .insert({ contact: contact.trim(), image_path: name, status: "pending" });
         if (dbErr) throw dbErr;
       }
       setStep("done");
@@ -225,7 +226,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
     }
   };
 
-  const reset = () => { clearFile(); setContact(""); setContactErr(""); setPoseConversion(false); };
+  const reset = () => { clearFile(); setContact(""); setContactErr(""); };
 
   // ───────────────────────────────────────────────────────────────────────────
   return (
@@ -236,17 +237,17 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
     >
       {/* ambient glows */}
       <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-violet-200/40 blur-[130px]" />
-      <div aria-hidden className="pointer-events-none absolute right-[6%] top-[15%] h-56 w-56 rounded-full bg-sky-200/30 blur-[100px]" />
-      <div aria-hidden className="pointer-events-none absolute left-[6%] bottom-[10%] h-72 w-72 rounded-full bg-indigo-100/40 blur-[120px]" />
+      <div aria-hidden className="pointer-events-none absolute right-[6%] top-[15%] hidden h-56 w-56 rounded-full bg-sky-200/30 blur-[100px] sm:block" />
+      <div aria-hidden className="pointer-events-none absolute left-[6%] bottom-[10%] hidden h-72 w-72 rounded-full bg-indigo-100/40 blur-[120px] sm:block" />
 
       <div className="relative z-10 mx-auto max-w-3xl">
 
         {/* ════ HEADLINE ════ */}
         <motion.div
           className="mb-12 text-center"
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, ease: EASE }}
+          transition={{ duration: dur(0.65), ease: EASE }}
         >
           <h1
             className="text-5xl font-[900] leading-[1.08] tracking-tight text-slate-950 sm:text-6xl lg:text-7xl"
@@ -263,9 +264,9 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
 
         {/* ════ UPLOAD WIDGET ════ */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, delay: 0.12, ease: EASE }}
+          transition={{ duration: dur(0.65), delay: dur(0.12), ease: EASE }}
         >
           {!isSupabaseConfigured && step !== "done" && (
             <div className="mb-4 rounded-2xl border border-amber-200/80 bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-800">
@@ -279,10 +280,10 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
             {step === "idle" && (
               <motion.div
                 key="idle"
-                initial={{ opacity: 0, scale: 0.98 }}
+                initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.18 } }}
-                transition={{ duration: 0.22 }}
+                exit={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.98, transition: { duration: dur(0.18) } }}
+                transition={{ duration: dur(0.22) }}
               >
                 <input
                   ref={inputRef}
@@ -296,7 +297,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                   tabIndex={0}
                   aria-label={t.dropTitle}
                   onClick={() => !isUploading && inputRef.current?.click()}
-                  onKeyDown={(e) => e.key === "Enter" && !isUploading && inputRef.current?.click()}
+                  onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && !isUploading && inputRef.current?.click()}
                   onDrop={handleDrop}
                   onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                   onDragLeave={() => setIsDragging(false)}
@@ -312,7 +313,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                 >
                   <motion.div
                     className="mb-5 text-indigo-400"
-                    animate={{ y: isDragging ? -8 : 0 }}
+                    animate={{ y: isDragging && !shouldReduceMotion ? -8 : 0 }}
                     transition={{ type: "spring", stiffness: 320, damping: 22 }}
                   >
                     <LayersIcon className="h-14 w-14" />
@@ -351,15 +352,15 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
             {step === "verify" && (
               <motion.div
                 key="verify"
-                initial={{ opacity: 0, y: 16 }}
+                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10, transition: { duration: 0.2 } }}
-                transition={{ duration: 0.3, ease: EASE }}
+                exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -10, transition: { duration: dur(0.2) } }}
+                transition={{ duration: dur(0.3), ease: EASE }}
               >
                 <div className="overflow-hidden rounded-[28px] border border-slate-100 bg-white shadow-[0_20px_60px_-16px_rgba(15,23,42,0.10)]">
 
                   {/* ── header ── */}
-                  <div className="border-b border-slate-100 px-7 py-6">
+                  <div className="border-b border-slate-100 px-5 py-5 sm:px-7 sm:py-6">
                     <p className="text-lg font-black text-slate-900">{t.verifyTitle}</p>
                   </div>
 
@@ -369,7 +370,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                   <div className="grid grid-cols-[2fr_3fr] gap-0">
 
                     {/* Reference column */}
-                    <div className="border-r border-slate-100 bg-[#f7f8fc] p-5">
+                    <div className="border-r border-slate-100 bg-[#f7f8fc] p-3 sm:p-5">
                       <p className="mb-3 text-[10px] font-black uppercase tracking-widest text-emerald-600">
                         {t.verifyReferenceLabel}
                       </p>
@@ -379,7 +380,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                           alt="Reference illustration"
                           fill
                           className="object-contain p-3"
-                          sizes="200px"
+                          sizes="(min-width: 768px) 280px, 40vw"
                         />
                         <span className="absolute right-2 top-2 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-black text-white">
                           ✓
@@ -387,8 +388,8 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                       </div>
                     </div>
 
-                    {/* Upload + checklist column */}
-                    <div className="p-5">
+                    {/* Upload column — image only */}
+                    <div className="p-3 sm:p-5">
                       <p className="mb-3 text-[10px] font-black uppercase tracking-widest text-slate-400">
                         {t.verifyYourLabel}
                       </p>
@@ -403,49 +404,36 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                           <button
                             type="button"
                             onClick={clearFile}
-                            aria-label="Remove"
-                            className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-400 backdrop-blur-sm transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-400"
+                            aria-label={t.removeLabel}
+                            className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-400 backdrop-blur-sm transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-400 sm:h-7 sm:w-7"
                           >
                             <X size={11} />
                           </button>
                         </div>
                       )}
-
-                      {/* checklist */}
-                      <ul className="mt-4 space-y-1.5">
-                        {t.verifyChecks.map((item) => (
-                          <li key={item} className="flex items-start gap-2">
-                            <span className="mt-0.5 shrink-0 text-[11px] font-black text-emerald-500">✓</span>
-                            <span className="text-[12px] leading-snug text-slate-600">{item}</span>
-                          </li>
-                        ))}
-                      </ul>
                     </div>
                   </div>
 
-                  {/* ── Pose conversion checkbox ── */}
-                  <div className="px-6 pt-4">
-                    <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/60 px-4 py-3 transition-colors hover:bg-indigo-50/40">
-                      <input
-                        type="checkbox"
-                        checked={poseConversion}
-                        onChange={(e) => setPoseConversion(e.target.checked)}
-                        className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-indigo-500"
-                      />
-                      <span className="text-[12px] leading-snug text-slate-500">
-                        {t.verifyPoseCheckbox}
-                      </span>
-                    </label>
+                  {/* ── Criteria — below images, full-width scan ── */}
+                  <div className="border-t border-slate-100 px-4 py-3 sm:px-6 sm:py-4">
+                    <ul className="flex flex-col gap-2.5">
+                      {t.verifyChecks.map((item) => (
+                        <li key={item} className="flex items-center gap-2.5">
+                          <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-emerald-50 text-[10px] font-black text-emerald-600">✓</span>
+                          <span className="text-[13px] font-medium text-slate-700">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
 
                   {/* ── CTAs ── */}
-                  <div className="px-6 pb-5 pt-4">
+                  <div className="px-4 pb-5 pt-3 sm:px-6 sm:pt-4">
                     <motion.button
                       type="button"
                       onClick={() => setStep("contact")}
                       className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#1a1025] py-4 text-base font-black text-white shadow-lg transition-all hover:bg-[#261535]"
-                      whileHover={{ scale: 1.015 }}
-                      whileTap={{ scale: 0.985 }}
+                      whileHover={shouldReduceMotion ? {} : { scale: 1.015 }}
+                      whileTap={shouldReduceMotion ? {} : { scale: 0.985 }}
                     >
                       {t.verifyConfirm}
                       <ArrowRight size={16} className="text-indigo-400" />
@@ -453,7 +441,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                     <button
                       type="button"
                       onClick={clearFile}
-                      className="mt-4 flex w-full items-center justify-center gap-1 text-sm font-medium text-slate-400 transition-opacity hover:opacity-70"
+                      className="mt-4 flex min-h-[44px] w-full items-center justify-center gap-1 text-sm font-medium text-slate-400 transition-opacity hover:opacity-70"
                     >
                       <ChevronLeft size={14} />
                       {t.verifyRetry}
@@ -471,10 +459,10 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
             {step === "contact" && (
               <motion.div
                 key="contact"
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.28, ease: EASE }}
+                exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -8 }}
+                transition={{ duration: dur(0.28), ease: EASE }}
               >
                 <div className="overflow-hidden rounded-[28px] border border-slate-100 bg-white shadow-[0_20px_60px_-16px_rgba(15,23,42,0.1)]">
 
@@ -487,9 +475,9 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                       <div className="min-w-0 flex-1">
                         <motion.p
                           className="text-base font-black text-slate-900"
-                          initial={{ opacity: 0, x: -8 }}
+                          initial={{ opacity: 0, x: shouldReduceMotion ? 0 : -8 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.05 }}
+                          transition={{ delay: dur(0.05) }}
                         >
                           {t.uploadSuccessHeadline}
                         </motion.p>
@@ -497,7 +485,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                           className="mt-0.5 text-sm text-slate-500"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
-                          transition={{ delay: 0.18 }}
+                          transition={{ delay: dur(0.18) }}
                         >
                           {t.uploadSuccessBody}
                         </motion.p>
@@ -505,8 +493,8 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                       <button
                         type="button"
                         onClick={clearFile}
-                        aria-label="Remove"
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-500"
+                        aria-label={t.removeLabel}
+                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-500 sm:h-8 sm:w-8"
                       >
                         <X size={13} />
                       </button>
@@ -540,8 +528,8 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                       type="submit"
                       disabled={isSubmitting}
                       className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#1a1025] py-4 text-base font-black text-white shadow-lg transition-all hover:bg-[#261535] disabled:cursor-not-allowed disabled:opacity-50"
-                      whileHover={!isSubmitting ? { scale: 1.015 } : {}}
-                      whileTap={!isSubmitting ? { scale: 0.985 } : {}}
+                      whileHover={!isSubmitting && !shouldReduceMotion ? { scale: 1.015 } : {}}
+                      whileTap={!isSubmitting && !shouldReduceMotion ? { scale: 0.985 } : {}}
                     >
                       {isSubmitting ? (
                         <><Loader2 size={16} className="animate-spin" />{t.submitting}</>
@@ -558,16 +546,16 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
             {step === "done" && (
               <motion.div
                 key="done"
-                initial={{ opacity: 0, scale: 0.97, y: 8 }}
+                initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.97, y: shouldReduceMotion ? 0 : 8 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.32, ease: EASE }}
+                transition={{ duration: dur(0.32), ease: EASE }}
               >
                 <div className="rounded-[28px] border border-emerald-100 bg-white px-8 py-12 text-center shadow-[0_20px_60px_-16px_rgba(15,23,42,0.08)]">
                   <motion.div
                     className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-500"
-                    initial={{ scale: 0.5, opacity: 0 }}
+                    initial={{ scale: shouldReduceMotion ? 1 : 0.5, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.1, type: "spring", stiffness: 280, damping: 16 }}
+                    transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.1, type: "spring", stiffness: 280, damping: 16 }}
                   >
                     <CheckCircle2 size={32} />
                   </motion.div>
@@ -600,10 +588,10 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
           {step === "idle" && (
             <motion.div
               key="video"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.4, delay: 0.28, ease: EASE }}
+              exit={{ opacity: 0, y: shouldReduceMotion ? 0 : 10 }}
+              transition={{ duration: dur(0.4), delay: dur(0.28), ease: EASE }}
               className="mt-8"
             >
               <p className="mb-3 text-center text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">
@@ -616,6 +604,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                   muted
                   loop
                   playsInline
+                  preload="metadata"
                   className="w-full bg-slate-100"
                   style={{ aspectRatio: "16/9" }}
                 />
