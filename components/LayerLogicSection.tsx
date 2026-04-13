@@ -350,18 +350,23 @@ export default function LayerLogicSection({ lang }: { lang: Lang }) {
   const canvasSize = manifest?.canvasSize ?? [1024, 1536];
 
   return (
-    <section className="relative overflow-hidden bg-[#f7f8fc] px-6 py-32">
+    <section className="relative overflow-hidden bg-[#f7f8fc] px-6 py-24 sm:py-32">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-white to-transparent" />
-      <div className="pointer-events-none absolute right-[10%] top-24 h-60 w-60 rounded-full bg-indigo-200/30 blur-[110px]" />
-      <div className="pointer-events-none absolute left-[6%] bottom-16 h-72 w-72 rounded-full bg-cyan-200/30 blur-[120px]" />
+      <div className="pointer-events-none absolute right-[10%] top-24 h-60 w-60 rounded-full bg-[oklch(52%_0.19_315)]/10 blur-[110px]" />
+      <div className="pointer-events-none absolute left-[6%] bottom-16 h-72 w-72 rounded-full bg-[oklch(72%_0.14_75)]/8 blur-[120px]" />
 
       <div className="relative mx-auto max-w-7xl">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/80 px-4 py-2 text-[11px] font-black uppercase tracking-[0.32em] text-indigo-600 shadow-sm">
-            <FolderTree size={14} />
+          <p
+            className="mb-4 text-[11px] font-bold uppercase tracking-widest text-[oklch(52%_0.19_315)]"
+            style={{ fontFamily: "var(--font-hanken), system-ui, sans-serif" }}
+          >
             {text.eyebrow}
-          </div>
-          <h2 className="mt-8 text-4xl font-[950] tracking-[-0.06em] text-slate-950 sm:text-5xl lg:text-6xl">
+          </p>
+          <h2
+            className="text-4xl font-black leading-tight tracking-tight text-slate-900 sm:text-5xl lg:text-6xl"
+            style={{ fontFamily: "var(--font-gloock), var(--font-noto-serif-kr), Georgia, serif" }}
+          >
             {text.title}
           </h2>
           <p className="mx-auto mt-6 max-w-3xl text-lg font-medium leading-8 text-slate-500 sm:text-xl">
@@ -496,7 +501,7 @@ export default function LayerLogicSection({ lang }: { lang: Lang }) {
             className="overflow-hidden rounded-[28px] border border-slate-200 bg-slate-950 text-white shadow-[0_24px_60px_-32px_rgba(15,23,42,0.45)] lg:rounded-[40px] lg:shadow-[0_36px_80px_-36px_rgba(15,23,42,0.45)]"
           >
             <div className="border-b border-white/10 px-4 py-4 lg:px-6 lg:py-6">
-              <div className="text-[10px] font-black uppercase tracking-[0.28em] text-indigo-300">
+              <div className="text-[10px] font-black uppercase tracking-[0.28em] text-[oklch(62%_0.19_315)]">
                 {text.treeLabel}
               </div>
               <div className="mt-2 text-lg font-black tracking-tight text-white lg:mt-3 lg:text-3xl">
@@ -536,7 +541,7 @@ export default function LayerLogicSection({ lang }: { lang: Lang }) {
                   folderSections.map((folder) => (
                     <div key={folder.folderPath} className="mb-3 last:mb-0">
                       <div className="flex items-center gap-2 rounded-[18px] px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">
-                        <FolderTree size={14} className="text-indigo-300" />
+                        <FolderTree size={14} className="text-[oklch(52%_0.19_315)]/50" />
                         {folder.label}
                       </div>
                       <div className="mt-1 space-y-1">
@@ -555,7 +560,7 @@ export default function LayerLogicSection({ lang }: { lang: Lang }) {
                             >
                               <span
                                 className={`h-2.5 w-2.5 rounded-full ${
-                                  selected ? "bg-indigo-500" : "bg-slate-500"
+                                  selected ? "bg-[oklch(52%_0.19_315)]" : "bg-slate-500"
                                 }`}
                               />
                               <div className="min-w-0 flex-1">
@@ -568,8 +573,8 @@ export default function LayerLogicSection({ lang }: { lang: Lang }) {
                                 size={14}
                                 className={`transition-opacity ${
                                   selected
-                                    ? "text-indigo-500 opacity-100"
-                                    : "text-indigo-300 opacity-0 group-hover:opacity-100"
+                                    ? "text-[oklch(52%_0.19_315)] opacity-100"
+                                    : "text-[oklch(62%_0.19_315)] opacity-0 group-hover:opacity-100"
                                 }`}
                               />
                             </button>

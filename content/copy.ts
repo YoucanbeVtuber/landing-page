@@ -5,10 +5,10 @@ export const DISCORD_INVITE_URL =
 export const COPY = {
   en: {
     preRegister: {
-      title: "Skip the cutting, straight to the soul.",
+      title: "Build your first model today.",
       subtitle:
         "Be the first to experience the smarter way to prepare Live2D models. Join the waiting list for early access.",
-      ctaButton: "Join the Limited Beta",
+      ctaButton: "Separate your illustration now",
       note: "* Launch updates only. Unsubscribe anytime.",
       footerLine: "Live2D preparation automation · Closed Beta",
       cancel: "Cancel",
@@ -56,10 +56,10 @@ export const COPY = {
   },
   kr: {
     preRegister: {
-      title: "얼굴 분리는 저희가 할게요. 당신은 표정의 생동감에만 집중하세요.",
+      title: "지금 당신의 첫 모델을 만드세요.",
       subtitle:
         "Live2D 모델을 준비하는 더 스마트한 방법을 가장 먼저 경험해보세요. 얼리 액세스를 위한 대기 리스트에 등록하세요.",
-      ctaButton: "한정 베타 참여하기",
+      ctaButton: "지금 바로 일러스트 분리하기",
       note: "* 스팸 없이 출시 소식만 전해드립니다. 언제든지 구독 취소 가능.",
       footerLine: "Live2D 파츠 분리 자동화 · Closed Beta",
       cancel: "취소",

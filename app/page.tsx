@@ -4,9 +4,8 @@ import { useState } from "react";
 import { Languages } from "lucide-react";
 import HeroUploadSection from "@/components/HeroUploadSection";
 import LayerLogicSection from "@/components/LayerLogicSection";
-import PrecisionSection from "@/components/PrecisionSection";
+import MotionSection from "@/components/MotionSection";
 import UseCaseSection from "@/components/UseCaseSection";
-import CreatorsVoiceSection from "@/components/CreatorsVoiceSection";
 import PreRegisterSection from "@/components/PreRegisterSection";
 import type { Lang } from "@/content/copy";
 
@@ -23,11 +22,10 @@ export default function Home() {
               key={option}
               type="button"
               onClick={() => setLang(option)}
-              className={`rounded-full px-3 py-1.5 transition-all ${
-                lang === option
+              className={`rounded-full px-3 py-1.5 transition-all ${lang === option
                   ? "bg-slate-900 text-white shadow-sm"
                   : "text-slate-500 hover:bg-slate-100 hover:text-slate-800"
-              }`}
+                }`}
             >
               {option.toUpperCase()}
             </button>
@@ -37,9 +35,8 @@ export default function Home() {
 
       <HeroUploadSection lang={lang} />
       <LayerLogicSection lang={lang} />
-      <PrecisionSection lang={lang} />
       <UseCaseSection lang={lang} />
-      <CreatorsVoiceSection lang={lang} />
+      <MotionSection lang={lang} />
       <PreRegisterSection lang={lang} />
     </main>
   );

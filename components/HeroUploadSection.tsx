@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { ArrowRight, Sparkles, Loader2, X, ChevronLeft } from "lucide-react";
+import { ArrowRight, Sparkles, Loader2, X, ChevronLeft, CheckCircle, Mail } from "lucide-react";
 import Image from "next/image";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import type { Lang } from "@/content/copy";
@@ -33,9 +33,26 @@ const TEXT = {
     // contact
     uploadSuccessHeadline: "Received.",
     uploadSuccessBody: "In 24 hours, you'll have a PSD ready to rig.",
-    contactTitle: "Where should we send it?",
-    contactSub: "We'll reach you directly when your layers are ready.",
-    contactPlaceholder: "KakaoTalk ID, email, or phone",
+    channels: {
+      discord: {
+        tab: "Discord",
+        title: "What's your Discord username?",
+        sub: "We'll send your PSD there when it's ready.",
+        placeholder: "username or username#1234",
+      },
+      x: {
+        tab: "X (Twitter)",
+        title: "What's your X handle?",
+        sub: "We'll DM your PSD download link when it's ready.",
+        placeholder: "@handle",
+      },
+      email: {
+        tab: "Email",
+        title: "What's your email?",
+        sub: "We'll send your PSD download link by email.",
+        placeholder: "example@email.com",
+      },
+    },
     submitBtn: "Request layer separation",
     submitting: "Sending…",
     // done
@@ -45,7 +62,7 @@ const TEXT = {
     // errors
     errType: "Only PNG, JPG, or WEBP files are accepted.",
     errSize: "File must be under 20 MB.",
-    errContact: "Please enter a contact address.",
+    errContact: "Please enter your contact.",
     errServer: "Something went wrong. Please try again.",
     previewBanner: "Preview mode — submissions won't be saved.",
     // video
@@ -76,9 +93,26 @@ const TEXT = {
     // contact
     uploadSuccessHeadline: "접수됐습니다.",
     uploadSuccessBody: "24시간 내에 리깅 가능한 PSD 링크를 보내드립니다.",
-    contactTitle: "결과를 어디로 보내드릴까요?",
-    contactSub: "레이어가 완성되면 바로 연락드립니다.",
-    contactPlaceholder: "카카오톡 ID · 이메일 · 전화번호",
+    channels: {
+      discord: {
+        tab: "Discord",
+        title: "디스코드 아이디를 알려주세요.",
+        sub: "작업이 완료되면 디스코드로 바로 전달해드립니다.",
+        placeholder: "username 또는 username#1234",
+      },
+      x: {
+        tab: "X (Twitter)",
+        title: "X 핸들을 알려주세요.",
+        sub: "완성된 PSD 다운로드 링크를 X DM으로 보내드립니다.",
+        placeholder: "@handle",
+      },
+      email: {
+        tab: "Email",
+        title: "이메일을 알려주세요.",
+        sub: "완성된 PSD 다운로드 링크를 이메일로 보내드립니다.",
+        placeholder: "example@email.com",
+      },
+    },
     submitBtn: "레이어 분리 신청하기",
     submitting: "전송 중…",
     // done
@@ -119,9 +153,26 @@ const TEXT = {
     // contact
     uploadSuccessHeadline: "受け取りました。",
     uploadSuccessBody: "24時間以内にリギングできるPSDのリンクをお送りします。",
-    contactTitle: "結果はどちらに送りますか？",
-    contactSub: "レイヤーが完成したら直接ご連絡します。",
-    contactPlaceholder: "連絡先（メール・電話番号など）",
+    channels: {
+      discord: {
+        tab: "Discord",
+        title: "DiscordのIDを教えてください。",
+        sub: "完成したPSDをDiscordでお届けします。",
+        placeholder: "username または username#1234",
+      },
+      x: {
+        tab: "X (Twitter)",
+        title: "XのハンドルIDを教えてください。",
+        sub: "完成したPSDのリンクをX DMでお送りします。",
+        placeholder: "@handle",
+      },
+      email: {
+        tab: "Email",
+        title: "メールアドレスを教えてください。",
+        sub: "完成したPSDのダウンロードリンクをメールでお送りします。",
+        placeholder: "example@email.com",
+      },
+    },
     submitBtn: "レイヤー分割を依頼する",
     submitting: "送信中…",
     // done
@@ -142,6 +193,7 @@ const TEXT = {
 
 // ─── types ─────────────────────────────────────────────────────────────────────
 type Step = "idle" | "verify" | "contact" | "done";
+type ContactType = "discord" | "x" | "email";
 const ACCEPTED = ["image/png", "image/jpeg", "image/webp"];
 const MAX_BYTES = 20 * 1024 * 1024;
 
@@ -161,6 +213,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
   const [preview, setPreview] = useState<string | null>(null);
   const [uploadErr, setUploadErr] = useState("");
   const [contact, setContact] = useState("");
+  const [contactType, setContactType] = useState<ContactType>("discord");
   const [contactErr, setContactErr] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -203,7 +256,9 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setContactErr("");
-    if (!contact.trim()) { setContactErr(t.errContact); return; }
+    const trimmed = contact.trim();
+    if (!trimmed) { setContactErr(t.errContact); return; }
+    if (contactType === "email" && !trimmed.includes("@")) { setContactErr(t.errContact); return; }
     setIsSubmitting(true);
     try {
       if (isSupabaseConfigured && supabase && file) {
@@ -215,7 +270,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
         if (stErr) throw stErr;
         const { error: dbErr } = await supabase
           .from("upload_requests")
-          .insert({ contact: contact.trim(), image_path: name, status: "pending" });
+          .insert({ contact: `${contactType}:${trimmed}`, image_path: name, status: "pending" });
         if (dbErr) throw dbErr;
       }
       setStep("done");
@@ -226,7 +281,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
     }
   };
 
-  const reset = () => { clearFile(); setContact(""); setContactErr(""); };
+  const reset = () => { clearFile(); setContact(""); setContactType("discord"); setContactErr(""); };
 
   // ───────────────────────────────────────────────────────────────────────────
   return (
@@ -238,7 +293,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
       {/* ambient glows */}
       <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-violet-200/40 blur-[130px]" />
       <div aria-hidden className="pointer-events-none absolute right-[6%] top-[15%] hidden h-56 w-56 rounded-full bg-sky-200/30 blur-[100px] sm:block" />
-      <div aria-hidden className="pointer-events-none absolute left-[6%] bottom-[10%] hidden h-72 w-72 rounded-full bg-indigo-100/40 blur-[120px] sm:block" />
+      <div aria-hidden className="pointer-events-none absolute left-[6%] bottom-[10%] hidden h-72 w-72 rounded-full bg-[oklch(52%_0.19_315)]/8 blur-[120px] sm:block" />
 
       <div className="relative z-10 mx-auto max-w-3xl">
 
@@ -304,15 +359,15 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                   className={`
                     relative flex cursor-pointer flex-col items-center justify-center
                     rounded-[28px] px-8 py-16 transition-all duration-200
-                    focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-400/30
+                    focus:outline-none focus-visible:ring-4 focus-visible:ring-[oklch(52%_0.19_315)]/20
                     ${isDragging
-                      ? "border-2 border-dashed border-indigo-400 bg-indigo-50 shadow-[0_0_0_8px_rgba(99,102,241,0.08)]"
-                      : "border-2 border-dashed border-slate-200 bg-white hover:border-indigo-300 hover:bg-indigo-50/40 shadow-[0_8px_32px_-12px_rgba(15,23,42,0.06)]"
+                      ? "border-2 border-dashed border-[oklch(52%_0.19_315)] bg-[oklch(96%_0.04_315)] shadow-[0_0_0_8px_oklch(52%_0.19_315_/_0.07)]"
+                      : "border-2 border-dashed border-slate-200 bg-white hover:border-[oklch(62%_0.19_315)] hover:bg-[oklch(96%_0.04_315)]/40 shadow-[0_8px_32px_-12px_rgba(15,23,42,0.06)]"
                     }
                   `}
                 >
                   <motion.div
-                    className="mb-5 text-indigo-400"
+                    className="mb-5 text-[oklch(52%_0.19_315)]"
                     animate={{ y: isDragging && !shouldReduceMotion ? -8 : 0 }}
                     transition={{ type: "spring", stiffness: 320, damping: 22 }}
                   >
@@ -330,7 +385,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                       animate={{ opacity: 1 }}
                       className="absolute inset-0 flex flex-col items-center justify-center gap-4 rounded-[26px] bg-white/90 backdrop-blur-sm"
                     >
-                      <Loader2 size={36} className="animate-spin text-indigo-500" />
+                      <Loader2 size={36} className="animate-spin text-[oklch(52%_0.19_315)]" />
                       <span className="text-sm font-semibold text-slate-600">{t.uploading}</span>
                     </motion.div>
                   )}
@@ -436,7 +491,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                       whileTap={shouldReduceMotion ? {} : { scale: 0.985 }}
                     >
                       {t.verifyConfirm}
-                      <ArrowRight size={16} className="text-indigo-400" />
+                      <ArrowRight size={16} className="text-[oklch(62%_0.19_315)]" />
                     </motion.button>
                     <button
                       type="button"
@@ -467,18 +522,19 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                 <div className="overflow-hidden rounded-[28px] border border-slate-100 bg-white shadow-[0_20px_60px_-16px_rgba(15,23,42,0.1)]">
 
                   {preview && (
-                    <div className="flex items-center gap-4 border-b border-slate-100 bg-gradient-to-r from-indigo-50/60 to-white px-6 py-5">
-                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-slate-100">
+                    <div className="flex items-center gap-4 border-b border-emerald-100 bg-gradient-to-r from-emerald-50 to-white px-6 py-5">
+                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-emerald-100">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={preview} alt="" className="h-full w-full object-cover" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <motion.p
-                          className="text-base font-black text-slate-900"
+                          className="flex items-center gap-1.5 text-base font-black text-emerald-600"
                           initial={{ opacity: 0, x: shouldReduceMotion ? 0 : -8 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: dur(0.05) }}
                         >
+                          <CheckCircle size={15} className="shrink-0" />
                           {t.uploadSuccessHeadline}
                         </motion.p>
                         <motion.p
@@ -502,17 +558,67 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                   )}
 
                   <form onSubmit={handleSubmit} className="px-6 py-7">
-                    <p className="text-base font-bold text-slate-900">{t.contactTitle}</p>
-                    <p className="mb-5 mt-1 text-sm text-slate-400">{t.contactSub}</p>
 
-                    <input
-                      type="text"
-                      value={contact}
-                      onChange={(e) => setContact(e.target.value)}
-                      placeholder={t.contactPlaceholder}
-                      autoFocus
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 text-base text-gray-900 placeholder-slate-400 outline-none transition-all focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
-                    />
+                    {/* ── Channel tabs ── */}
+                    <div className="mb-5 flex gap-1 rounded-xl bg-slate-100 p-1">
+                      {(["discord", "x", "email"] as const).map((ch) => (
+                        <button
+                          key={ch}
+                          type="button"
+                          onClick={() => { setContactType(ch); setContact(""); setContactErr(""); }}
+                          className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[11px] font-bold transition-all ${
+                            contactType === ch
+                              ? "bg-white text-slate-900 shadow-sm"
+                              : "text-slate-500 hover:text-slate-700"
+                          }`}
+                        >
+                          {ch === "discord" && <DiscordIcon className="h-3 w-3 shrink-0" />}
+                          {ch === "x" && <XIcon className="h-3 w-3 shrink-0" />}
+                          {ch === "email" && <Mail size={11} className="shrink-0" />}
+                          <span>{t.channels[ch].tab}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* ── Title + sub ── */}
+                    <p className="text-base font-bold text-slate-900">
+                      {t.channels[contactType].title}
+                    </p>
+                    <p className="mb-4 mt-0.5 text-sm text-slate-400">
+                      {t.channels[contactType].sub}
+                    </p>
+
+                    {/* ── Input with channel icon ── */}
+                    <div className="relative">
+                      <div
+                        className={`pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded ${
+                          contactType === "discord"
+                            ? "bg-[#5865F2]"
+                            : contactType === "x"
+                            ? "bg-slate-900"
+                            : "bg-[oklch(52%_0.19_315)]"
+                        }`}
+                      >
+                        {contactType === "discord" && <DiscordIcon className="h-3.5 w-3.5 text-white" />}
+                        {contactType === "x" && <XIcon className="h-3.5 w-3.5 text-white" />}
+                        {contactType === "email" && <Mail size={13} className="text-white" />}
+                      </div>
+                      <input
+                        key={contactType}
+                        type={contactType === "email" ? "email" : "text"}
+                        value={contact}
+                        onChange={(e) => setContact(e.target.value)}
+                        placeholder={t.channels[contactType].placeholder}
+                        autoFocus
+                        className={`w-full rounded-xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-4 text-base text-gray-900 placeholder-slate-400 outline-none transition-all focus:bg-white focus:ring-4 ${
+                          contactType === "discord"
+                            ? "focus:border-[#5865F2] focus:ring-[#5865F2]/10"
+                            : contactType === "x"
+                            ? "focus:border-slate-700 focus:ring-slate-700/10"
+                            : "focus:border-[oklch(52%_0.19_315)] focus:ring-[oklch(52%_0.19_315)]/10"
+                        }`}
+                      />
+                    </div>
 
                     {contactErr && (
                       <motion.p
@@ -534,7 +640,7 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                       {isSubmitting ? (
                         <><Loader2 size={16} className="animate-spin" />{t.submitting}</>
                       ) : (
-                        <>{t.submitBtn}<ArrowRight size={16} className="text-indigo-400" /></>
+                        <>{t.submitBtn}<ArrowRight size={16} className="text-[oklch(72%_0.14_315)]" /></>
                       )}
                     </motion.button>
                   </form>
@@ -655,6 +761,24 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
 
       </div>
     </section>
+  );
+}
+
+// ─── discord icon ──────────────────────────────────────────────────────────────
+function DiscordIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
+      <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z" />
+    </svg>
+  );
+}
+
+// ─── x icon ────────────────────────────────────────────────────────────────────
+function XIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.261 5.632 5.903-5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
   );
 }
 
