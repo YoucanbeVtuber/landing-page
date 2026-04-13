@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { ArrowRight, CheckCircle2, Loader2, X, ChevronLeft } from "lucide-react";
+import { ArrowRight, Sparkles, Loader2, X, ChevronLeft } from "lucide-react";
 import Image from "next/image";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import type { Lang } from "@/content/copy";
@@ -39,7 +39,7 @@ const TEXT = {
     submitBtn: "Request layer separation",
     submitting: "Sending…",
     // done
-    doneHeadline: "You're on the list.",
+    doneHeadline: "Your character is in good hands.",
     doneSub: "Within 24 hours, you'll receive a download link for your layered PSD.",
     another: "Submit another illustration",
     // errors
@@ -68,7 +68,7 @@ const TEXT = {
     verifyChecks: [
       "정면을 바라보는 캐릭터",
       "상반신, 혹은 전신",
-      "애니메이션 스타일 고화질 일러스트",
+      "고화질 버츄얼 일러스트",
     ],
     verifyDisclaimer: "※ 조건을 만족하지 않는 경우, 결과가 제한되거나 처리되지 않을 수 있습니다.",
     verifyConfirm: "분리 신청하기",
@@ -82,7 +82,7 @@ const TEXT = {
     submitBtn: "레이어 분리 신청하기",
     submitting: "전송 중…",
     // done
-    doneHeadline: "접수 완료.",
+    doneHeadline: "소중한 캐릭터, 잘 받았습니다.",
     doneSub: "최대 24시간 내에 레이어 PSD 다운로드 링크를 보내드립니다.",
     another: "다른 일러스트 요청하기",
     // errors
@@ -125,7 +125,7 @@ const TEXT = {
     submitBtn: "レイヤー分割を依頼する",
     submitting: "送信中…",
     // done
-    doneHeadline: "受付完了。",
+    doneHeadline: "大切なキャラクター、確かに受け取りました。",
     doneSub: "24時間以内にレイヤーPSDのダウンロードリンクをお送りします。",
     another: "別のイラストを送る",
     // errors
@@ -550,32 +550,72 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: dur(0.32), ease: EASE }}
               >
-                <div className="rounded-[28px] border border-emerald-100 bg-white px-8 py-12 text-center shadow-[0_20px_60px_-16px_rgba(15,23,42,0.08)]">
-                  <motion.div
-                    className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-500"
-                    initial={{ scale: shouldReduceMotion ? 1 : 0.5, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.1, type: "spring", stiffness: 280, damping: 16 }}
+                <div className="rounded-[28px] border border-slate-100 bg-white px-8 py-12 text-center shadow-[0_20px_60px_-16px_rgba(15,23,42,0.08)]">
+                  {/* icon + particle burst */}
+                  <div className="relative mx-auto mb-6 h-16 w-16">
+                    {/* radial particles */}
+                    {!shouldReduceMotion && ([0, 45, 90, 135, 180, 225, 270, 315] as const).map((deg, i) => {
+                      const rad = (deg * Math.PI) / 180;
+                      const tx = Math.round(Math.cos(rad) * 32);
+                      const ty = Math.round(Math.sin(rad) * 32);
+                      return (
+                        <motion.span
+                          key={deg}
+                          className="pointer-events-none absolute left-1/2 top-1/2 -ml-[3px] -mt-[3px] h-1.5 w-1.5 rounded-full"
+                          style={{ background: i % 2 === 0 ? "oklch(52% 0.19 315)" : "oklch(72% 0.14 75)" }}
+                          initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+                          animate={{ x: tx, y: ty, opacity: 0, scale: 0.2 }}
+                          transition={{ duration: 0.55, ease: [0.2, 0.8, 0.3, 1], delay: 0.18 }}
+                        />
+                      );
+                    })}
+                    <motion.div
+                      className="flex h-16 w-16 items-center justify-center rounded-full bg-[oklch(96%_0.04_315)] text-[oklch(52%_0.19_315)]"
+                      initial={{ scale: shouldReduceMotion ? 1 : 0.4, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.08, type: "spring", stiffness: 300, damping: 18 }}
+                    >
+                      <Sparkles size={28} />
+                    </motion.div>
+                  </div>
+                  <motion.p
+                    className="text-2xl font-bold text-slate-900"
+                    initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: dur(0.3), delay: dur(0.22), ease: EASE }}
                   >
-                    <CheckCircle2 size={32} />
-                  </motion.div>
-                  <p className="text-2xl font-bold text-slate-900">{t.doneHeadline}</p>
-                  <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-slate-400">
+                    {t.doneHeadline}
+                  </motion.p>
+                  <motion.p
+                    className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-slate-400"
+                    initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: dur(0.3), delay: dur(0.34), ease: EASE }}
+                  >
                     {t.doneSub}
-                  </p>
+                  </motion.p>
                   {preview && (
-                    <div className="mx-auto mt-6 h-20 w-20 overflow-hidden rounded-2xl border border-slate-100">
+                    <motion.div
+                      className="mx-auto mt-6 h-24 w-24 overflow-hidden rounded-2xl"
+                      style={{ boxShadow: "0 0 0 3px oklch(52% 0.19 315 / 0.15), 0 8px 24px -4px oklch(52% 0.19 315 / 0.18)" }}
+                      initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.85 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.38, type: "spring", stiffness: 240, damping: 20 }}
+                    >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={preview} alt="" className="h-full w-full object-cover" />
-                    </div>
+                    </motion.div>
                   )}
-                  <button
+                  <motion.button
                     type="button"
                     onClick={reset}
-                    className="mt-7 text-sm font-semibold text-slate-400 underline underline-offset-4 transition-opacity hover:opacity-70"
+                    className="mt-8 text-sm font-semibold text-slate-400 underline underline-offset-4 transition-opacity hover:opacity-70"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: dur(0.25), delay: dur(0.5) }}
                   >
                     {t.another}
-                  </button>
+                  </motion.button>
                 </div>
               </motion.div>
             )}
@@ -624,7 +664,7 @@ function LayersIcon({ className }: { className?: string }) {
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden>
       <rect x="4" y="28" width="36" height="14" rx="4" fill="currentColor" opacity="0.12" />
       <rect x="4" y="18" width="36" height="14" rx="4" fill="currentColor" opacity="0.25" />
-      <rect x="4" y="8"  width="36" height="14" rx="4" fill="currentColor" opacity="0.55"
+      <rect x="4" y="8" width="36" height="14" rx="4" fill="currentColor" opacity="0.55"
         stroke="currentColor" strokeWidth="1.2" strokeOpacity="0.4" />
       <path d="M30 16 L30 10 M30 10 L34 14 M30 10 L26 14"
         stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.9" />
