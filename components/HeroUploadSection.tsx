@@ -32,7 +32,7 @@ const TEXT = {
     verifyRetry: "Try a different image",
     // contact
     uploadSuccessHeadline: "Received.",
-    uploadSuccessBody: "In 24 hours, you'll have a PSD ready to rig.",
+    uploadSuccessBody: "We'll send your layered PSD as soon as it's ready.",
     channels: {
       discord: {
         tab: "Discord",
@@ -57,7 +57,7 @@ const TEXT = {
     submitting: "Sending…",
     // done
     doneHeadline: "Your character is in good hands.",
-    doneSub: "Within 24 hours, you'll receive a download link for your layered PSD.",
+    doneSub: "We'll send you a download link as soon as your layered PSD is ready.",
     another: "Submit another illustration",
     // errors
     errType: "Only PNG, JPG, or WEBP files are accepted.",
@@ -92,7 +92,7 @@ const TEXT = {
     verifyRetry: "다른 이미지로 다시 시도하기",
     // contact
     uploadSuccessHeadline: "접수됐습니다.",
-    uploadSuccessBody: "24시간 내에 리깅 가능한 PSD 링크를 보내드립니다.",
+    uploadSuccessBody: "완성되는 즉시 리깅 가능한 PSD 링크를 보내드립니다.",
     channels: {
       discord: {
         tab: "Discord",
@@ -117,7 +117,7 @@ const TEXT = {
     submitting: "전송 중…",
     // done
     doneHeadline: "소중한 캐릭터, 잘 받았습니다.",
-    doneSub: "최대 24시간 내에 레이어 PSD 다운로드 링크를 보내드립니다.",
+    doneSub: "완성되는 즉시 레이어 PSD 다운로드 링크를 보내드립니다.",
     another: "다른 일러스트 요청하기",
     // errors
     errType: "PNG, JPG, WEBP 파일만 허용됩니다.",
@@ -152,7 +152,7 @@ const TEXT = {
     verifyRetry: "別の画像で再試行",
     // contact
     uploadSuccessHeadline: "受け取りました。",
-    uploadSuccessBody: "24時間以内にリギングできるPSDのリンクをお送りします。",
+    uploadSuccessBody: "完成次第、リギングできるPSDのリンクをお送りします。",
     channels: {
       discord: {
         tab: "Discord",
@@ -177,7 +177,7 @@ const TEXT = {
     submitting: "送信中…",
     // done
     doneHeadline: "大切なキャラクター、確かに受け取りました。",
-    doneSub: "24時間以内にレイヤーPSDのダウンロードリンクをお送りします。",
+    doneSub: "完成次第、レイヤーPSDのダウンロードリンクをお送りします。",
     another: "別のイラストを送る",
     // errors
     errType: "PNG、JPG、WEBP のみ対応しています。",
