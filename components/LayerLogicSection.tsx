@@ -139,47 +139,9 @@ function PreviewPlaceholder({
 }
 
 function labelFromFolderPath(folderPath?: string | null) {
-  if (!folderPath) return "Character";
+  if (!folderPath) return "Other";
   const segments = folderPath.split("/").filter(Boolean);
   return segments[segments.length - 1] ?? folderPath;
-}
-
-function resolvePsdGroup(layer: PreviewLayerRecord): { key: string; label: string; order: number } {
-  const layerId = layer.id.toLowerCase();
-  const layerName = layer.name.toLowerCase();
-  const folderPath = (layer.folderPath || "").toLowerCase();
-
-  if (layerId.startsWith("hair_") || layerName.startsWith("hair_") || folderPath.includes("/hair")) {
-    return { key: "Head/Hair", label: "Hair", order: 500 };
-  }
-  if (layerId.startsWith("eyebrow_") || layerName.startsWith("eyebrow_")) {
-    return { key: "Head/Brows", label: "Brows", order: 450 };
-  }
-  if (
-    layerId.startsWith("mouth_") ||
-    layerId.startsWith("teeth_") ||
-    layerId.startsWith("tongue") ||
-    layerName.startsWith("mouth_") ||
-    layerName.startsWith("teeth_") ||
-    layerName.startsWith("tongue")
-  ) {
-    return { key: "Head/Mouth", label: "Mouth", order: 350 };
-  }
-  if (
-    layerId.startsWith("iris_") ||
-    layerId.startsWith("eye_") ||
-    layerId.startsWith("eyelash_") ||
-    layerName.startsWith("iris_") ||
-    layerName.startsWith("eye_") ||
-    layerName.startsWith("eyelash_")
-  ) {
-    return { key: "Head/Eyes", label: "Eyes", order: 340 };
-  }
-  if (layerId.startsWith("face_") || layerName.startsWith("face_")) {
-    return { key: "Head/Face", label: "Face", order: 330 };
-  }
-
-  return { key: layer.folderPath || "Head/Other", label: labelFromFolderPath(layer.folderPath), order: 100 };
 }
 
 function resolveManifestAssetPath(assetPath: string | null | undefined, manifestSrc: string | null) {
@@ -304,15 +266,18 @@ export default function LayerLogicSection({ lang }: { lang: Lang }) {
     const buckets = new Map<string, FolderSection>();
 
     for (const layer of presentationLayers) {
-      const group = resolvePsdGroup(layer);
-      const bucket = buckets.get(group.key) ?? {
-        folderPath: group.key,
-        label: group.label,
+      const key = layer.folderPath || "";
+      const bucket = buckets.get(key) ?? {
+        folderPath: key,
+        label: labelFromFolderPath(layer.folderPath),
         layers: [],
-        order: group.order,
+        // Preserve manifest order: higher zIndex folders appear first
+        order: layer.zIndex,
       };
+      // Expand section order to the highest zIndex layer within it
+      if (layer.zIndex > bucket.order) bucket.order = layer.zIndex;
       bucket.layers.push(layer);
-      buckets.set(group.key, bucket);
+      buckets.set(key, bucket);
     }
 
     return [...buckets.values()]
