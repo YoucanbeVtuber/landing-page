@@ -139,47 +139,9 @@ function PreviewPlaceholder({
 }
 
 function labelFromFolderPath(folderPath?: string | null) {
-  if (!folderPath) return "Character";
+  if (!folderPath) return "Other";
   const segments = folderPath.split("/").filter(Boolean);
   return segments[segments.length - 1] ?? folderPath;
-}
-
-function resolvePsdGroup(layer: PreviewLayerRecord): { key: string; label: string; order: number } {
-  const layerId = layer.id.toLowerCase();
-  const layerName = layer.name.toLowerCase();
-  const folderPath = (layer.folderPath || "").toLowerCase();
-
-  if (layerId.startsWith("hair_") || layerName.startsWith("hair_") || folderPath.includes("/hair")) {
-    return { key: "Head/Hair", label: "Hair", order: 500 };
-  }
-  if (layerId.startsWith("eyebrow_") || layerName.startsWith("eyebrow_")) {
-    return { key: "Head/Brows", label: "Brows", order: 450 };
-  }
-  if (
-    layerId.startsWith("mouth_") ||
-    layerId.startsWith("teeth_") ||
-    layerId.startsWith("tongue") ||
-    layerName.startsWith("mouth_") ||
-    layerName.startsWith("teeth_") ||
-    layerName.startsWith("tongue")
-  ) {
-    return { key: "Head/Mouth", label: "Mouth", order: 350 };
-  }
-  if (
-    layerId.startsWith("iris_") ||
-    layerId.startsWith("eye_") ||
-    layerId.startsWith("eyelash_") ||
-    layerName.startsWith("iris_") ||
-    layerName.startsWith("eye_") ||
-    layerName.startsWith("eyelash_")
-  ) {
-    return { key: "Head/Eyes", label: "Eyes", order: 340 };
-  }
-  if (layerId.startsWith("face_") || layerName.startsWith("face_")) {
-    return { key: "Head/Face", label: "Face", order: 330 };
-  }
-
-  return { key: layer.folderPath || "Head/Other", label: labelFromFolderPath(layer.folderPath), order: 100 };
 }
 
 function resolveManifestAssetPath(assetPath: string | null | undefined, manifestSrc: string | null) {
@@ -304,15 +266,18 @@ export default function LayerLogicSection({ lang }: { lang: Lang }) {
     const buckets = new Map<string, FolderSection>();
 
     for (const layer of presentationLayers) {
-      const group = resolvePsdGroup(layer);
-      const bucket = buckets.get(group.key) ?? {
-        folderPath: group.key,
-        label: group.label,
+      const key = layer.folderPath || "";
+      const bucket = buckets.get(key) ?? {
+        folderPath: key,
+        label: labelFromFolderPath(layer.folderPath),
         layers: [],
-        order: group.order,
+        // Preserve manifest order: higher zIndex folders appear first
+        order: layer.zIndex,
       };
+      // Expand section order to the highest zIndex layer within it
+      if (layer.zIndex > bucket.order) bucket.order = layer.zIndex;
       bucket.layers.push(layer);
-      buckets.set(group.key, bucket);
+      buckets.set(key, bucket);
     }
 
     return [...buckets.values()]
@@ -350,18 +315,23 @@ export default function LayerLogicSection({ lang }: { lang: Lang }) {
   const canvasSize = manifest?.canvasSize ?? [1024, 1536];
 
   return (
-    <section className="relative overflow-hidden bg-[#f7f8fc] px-6 py-32">
+    <section className="relative overflow-hidden bg-[#f7f8fc] px-6 py-24 sm:py-32">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-white to-transparent" />
-      <div className="pointer-events-none absolute right-[10%] top-24 h-60 w-60 rounded-full bg-indigo-200/30 blur-[110px]" />
-      <div className="pointer-events-none absolute left-[6%] bottom-16 h-72 w-72 rounded-full bg-cyan-200/30 blur-[120px]" />
+      <div className="pointer-events-none absolute right-[10%] top-24 h-60 w-60 rounded-full bg-[oklch(52%_0.19_315)]/10 blur-[110px]" />
+      <div className="pointer-events-none absolute left-[6%] bottom-16 h-72 w-72 rounded-full bg-[oklch(72%_0.14_75)]/8 blur-[120px]" />
 
       <div className="relative mx-auto max-w-7xl">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/80 px-4 py-2 text-[11px] font-black uppercase tracking-[0.32em] text-indigo-600 shadow-sm">
-            <FolderTree size={14} />
+          <p
+            className="mb-4 text-[11px] font-bold uppercase tracking-widest text-[oklch(52%_0.19_315)]"
+            style={{ fontFamily: "var(--font-hanken), system-ui, sans-serif" }}
+          >
             {text.eyebrow}
-          </div>
-          <h2 className="mt-8 text-4xl font-[950] tracking-[-0.06em] text-slate-950 sm:text-5xl lg:text-6xl">
+          </p>
+          <h2
+            className="text-4xl font-black leading-tight tracking-tight text-slate-900 sm:text-5xl lg:text-6xl"
+            style={{ fontFamily: "var(--font-gloock), var(--font-noto-serif-kr), Georgia, serif" }}
+          >
             {text.title}
           </h2>
           <p className="mx-auto mt-6 max-w-3xl text-lg font-medium leading-8 text-slate-500 sm:text-xl">
@@ -493,10 +463,10 @@ export default function LayerLogicSection({ lang }: { lang: Lang }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.5, delay: 0.06 }}
-            className="overflow-hidden rounded-[28px] border border-slate-200 bg-slate-950 text-white shadow-[0_24px_60px_-32px_rgba(15,23,42,0.45)] lg:rounded-[40px] lg:shadow-[0_36px_80px_-36px_rgba(15,23,42,0.45)]"
+            className="overflow-hidden rounded-[28px] border border-slate-200 bg-slate-950 text-white shadow-[0_24px_60px_-32px_rgba(15,23,42,0.45)] lg:sticky lg:top-24 lg:flex lg:max-h-[calc(100vh-7rem)] lg:flex-col lg:rounded-[40px] lg:shadow-[0_36px_80px_-36px_rgba(15,23,42,0.45)]"
           >
-            <div className="border-b border-white/10 px-4 py-4 lg:px-6 lg:py-6">
-              <div className="text-[10px] font-black uppercase tracking-[0.28em] text-indigo-300">
+            <div className="shrink-0 border-b border-white/10 px-4 py-4 lg:px-6 lg:py-6">
+              <div className="text-[10px] font-black uppercase tracking-[0.28em] text-[oklch(62%_0.19_315)]">
                 {text.treeLabel}
               </div>
               <div className="mt-2 text-lg font-black tracking-tight text-white lg:mt-3 lg:text-3xl">
@@ -505,7 +475,7 @@ export default function LayerLogicSection({ lang }: { lang: Lang }) {
               <p className="mt-2 hidden max-w-md text-sm leading-7 text-slate-400 lg:block">{text.treeBody}</p>
             </div>
 
-            <div className="px-3 py-3 lg:px-4 lg:py-4">
+            <div className="flex min-h-0 flex-1 flex-col px-3 py-3 lg:px-4 lg:py-4">
               <button
                 type="button"
                 onMouseEnter={() => setHoveredLayerId(FULL_PREVIEW_ID)}
@@ -527,7 +497,7 @@ export default function LayerLogicSection({ lang }: { lang: Lang }) {
               </button>
 
               <div
-                className="mt-3 max-h-[42vh] overflow-y-auto rounded-[22px] border border-white/10 bg-white/5 p-2 overscroll-contain lg:max-h-none lg:rounded-[28px] lg:p-3"
+                className="mt-3 max-h-[52vh] min-h-0 flex-1 overflow-y-auto rounded-[22px] border border-white/10 bg-white/5 p-2 overscroll-contain lg:max-h-none lg:rounded-[28px] lg:p-3"
                 onMouseLeave={() => setHoveredLayerId(null)}
               >
                 {folderSections.length === 0 ? (
@@ -536,7 +506,7 @@ export default function LayerLogicSection({ lang }: { lang: Lang }) {
                   folderSections.map((folder) => (
                     <div key={folder.folderPath} className="mb-3 last:mb-0">
                       <div className="flex items-center gap-2 rounded-[18px] px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">
-                        <FolderTree size={14} className="text-indigo-300" />
+                        <FolderTree size={14} className="text-[oklch(52%_0.19_315)]/50" />
                         {folder.label}
                       </div>
                       <div className="mt-1 space-y-1">
@@ -555,7 +525,7 @@ export default function LayerLogicSection({ lang }: { lang: Lang }) {
                             >
                               <span
                                 className={`h-2.5 w-2.5 rounded-full ${
-                                  selected ? "bg-indigo-500" : "bg-slate-500"
+                                  selected ? "bg-[oklch(52%_0.19_315)]" : "bg-slate-500"
                                 }`}
                               />
                               <div className="min-w-0 flex-1">
@@ -568,8 +538,8 @@ export default function LayerLogicSection({ lang }: { lang: Lang }) {
                                 size={14}
                                 className={`transition-opacity ${
                                   selected
-                                    ? "text-indigo-500 opacity-100"
-                                    : "text-indigo-300 opacity-0 group-hover:opacity-100"
+                                    ? "text-[oklch(52%_0.19_315)] opacity-100"
+                                    : "text-[oklch(62%_0.19_315)] opacity-0 group-hover:opacity-100"
                                 }`}
                               />
                             </button>

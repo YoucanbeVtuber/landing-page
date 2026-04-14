@@ -2,361 +2,537 @@
   "format": "livingcel-preview-bundle",
   "version": 1,
   "source": {
-    "jobId": "job_hybrid_face_auto_review_4620af96",
-    "taskId": "LC_HYBRID_001",
-    "title": "Hybrid Face Auto Review"
+    "jobId": "psd-1776117858505",
+    "taskId": "psd-1776117858505",
+    "title": "head_final"
   },
   "manifest": {
     "summary": {
-      "jobId": "job_hybrid_face_auto_review_4620af96",
-      "taskId": "LC_HYBRID_001",
-      "title": "Hybrid Face Auto Review",
+      "jobId": "psd-1776117858505",
+      "taskId": "psd-1776117858505",
+      "title": "head_final",
       "status": "preview_ready",
-      "createdAt": "2026-03-17T14:57:10Z"
+      "createdAt": "2026-04-13T22:04:18.505Z"
     },
     "canvasSize": [
-      1024,
-      1536
+      2000,
+      2048
     ],
     "originalAssetPath": "./assets/original.png",
     "compositeAssetPath": "./assets/composite.png",
     "layers": [
       {
-        "id": "face_base",
-        "name": "Face_Base",
-        "assetPath": "./assets/face_base.png",
-        "zIndex": 5,
+        "id": "hairdetail_cat_ear_r",
+        "name": "Cat_Ear_R",
+        "assetPath": "./assets/hairdetail_cat_ear_r.png",
+        "zIndex": 32,
         "visibleByDefault": true,
-        "group": "Face",
-        "folderPath": "Character/Face",
+        "group": "HairDetail",
+        "folderPath": "HairDetail",
         "blendMode": "normal",
-        "placementBounds": null
+        "placementBounds": {
+          "x": 1267,
+          "y": 262,
+          "width": 490,
+          "height": 540
+        }
       },
       {
-        "id": "face_outline",
-        "name": "Face_Outline",
-        "assetPath": "./assets/face_outline.png",
-        "zIndex": 6,
+        "id": "hairdetail_cat_ear_l",
+        "name": "Cat_Ear_L",
+        "assetPath": "./assets/hairdetail_cat_ear_l.png",
+        "zIndex": 31,
         "visibleByDefault": true,
-        "group": "Face",
-        "folderPath": "Character/Face",
+        "group": "HairDetail",
+        "folderPath": "HairDetail",
         "blendMode": "normal",
-        "placementBounds": null
+        "placementBounds": {
+          "x": 320,
+          "y": 262,
+          "width": 489,
+          "height": 540
+        }
       },
       {
-        "id": "blush_left_blush_L",
-        "name": "Face_Blush_L",
-        "assetPath": "./assets/blush_left_blush_l.png",
+        "id": "hair_side_hair_r",
+        "name": "Side Hair (R)",
+        "assetPath": "./assets/hair_side_hair_r.png",
         "zIndex": 30,
         "visibleByDefault": true,
-        "group": "Face",
-        "folderPath": "Character/Face",
-        "blendMode": "overlay",
-        "placementBounds": {
-          "x": 269,
-          "y": 823,
-          "width": 262,
-          "height": 161
-        }
-      },
-      {
-        "id": "blush_right_blush_L",
-        "name": "Face_Blush_R",
-        "assetPath": "./assets/blush_right_blush_l.png",
-        "zIndex": 35,
-        "visibleByDefault": true,
-        "group": "Face",
-        "folderPath": "Character/Face",
-        "blendMode": "overlay",
-        "placementBounds": {
-          "x": 531,
-          "y": 823,
-          "width": 262,
-          "height": 161
-        }
-      },
-      {
-        "id": "iris_left",
-        "name": "Iris_L",
-        "assetPath": "./assets/iris_left.png",
-        "zIndex": 40,
-        "visibleByDefault": true,
-        "group": "Face",
-        "folderPath": "Character/Face",
+        "group": "Hair",
+        "folderPath": "Hair",
         "blendMode": "normal",
         "placementBounds": {
-          "x": 373,
-          "y": 799,
-          "width": 134,
+          "x": 1047,
+          "y": 341,
+          "width": 499,
+          "height": 1430
+        }
+      },
+      {
+        "id": "hair_side_hair_l",
+        "name": "Side Hair (L)",
+        "assetPath": "./assets/hair_side_hair_l.png",
+        "zIndex": 29,
+        "visibleByDefault": true,
+        "group": "Hair",
+        "folderPath": "Hair",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 530,
+          "y": 337,
+          "width": 494,
+          "height": 1434
+        }
+      },
+      {
+        "id": "hair_front_hair",
+        "name": "Front Hair",
+        "assetPath": "./assets/hair_front_hair.png",
+        "zIndex": 28,
+        "visibleByDefault": true,
+        "group": "Hair",
+        "folderPath": "Hair",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 857,
+          "y": 387,
+          "width": 334,
+          "height": 760
+        }
+      },
+      {
+        "id": "hair_front_hair_r",
+        "name": "Front Hair_R",
+        "assetPath": "./assets/hair_front_hair_r.png",
+        "zIndex": 27,
+        "visibleByDefault": true,
+        "group": "Hair",
+        "folderPath": "Hair",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 1062,
+          "y": 401,
+          "width": 333,
+          "height": 751
+        }
+      },
+      {
+        "id": "hair_front_hair_l",
+        "name": "Front Hair_L",
+        "assetPath": "./assets/hair_front_hair_l.png",
+        "zIndex": 26,
+        "visibleByDefault": true,
+        "group": "Hair",
+        "folderPath": "Hair",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 670,
+          "y": 400,
+          "width": 330,
+          "height": 804
+        }
+      },
+      {
+        "id": "head_mouth_mouth_lower_line",
+        "name": "Mouth_Lower_Line",
+        "assetPath": "./assets/head_mouth_mouth_lower_line.png",
+        "zIndex": 25,
+        "visibleByDefault": true,
+        "group": "Mouth",
+        "folderPath": "Head/Mouth",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 1000,
+          "y": 1416,
+          "width": 97,
+          "height": 9
+        }
+      },
+      {
+        "id": "head_mouth_mouth_upper_line",
+        "name": "Mouth_Upper_Line",
+        "assetPath": "./assets/head_mouth_mouth_upper_line.png",
+        "zIndex": 24,
+        "visibleByDefault": true,
+        "group": "Mouth",
+        "folderPath": "Head/Mouth",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 1000,
+          "y": 1415,
+          "width": 97,
+          "height": 11
+        }
+      },
+      {
+        "id": "head_mouth_mouth_upper_skin",
+        "name": "Mouth_Upper_Skin",
+        "assetPath": "./assets/head_mouth_mouth_upper_skin.png",
+        "zIndex": 23,
+        "visibleByDefault": true,
+        "group": "Mouth",
+        "folderPath": "Head/Mouth",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 989,
+          "y": 1385,
+          "width": 117,
+          "height": 39
+        }
+      },
+      {
+        "id": "head_mouth_mouth_lower_skin",
+        "name": "Mouth_Lower_Skin",
+        "assetPath": "./assets/head_mouth_mouth_lower_skin.png",
+        "zIndex": 22,
+        "visibleByDefault": true,
+        "group": "Mouth",
+        "folderPath": "Head/Mouth",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 987,
+          "y": 1412,
+          "width": 118,
+          "height": 44
+        }
+      },
+      {
+        "id": "head_mouth_tongue",
+        "name": "Tongue",
+        "assetPath": "./assets/head_mouth_tongue.png",
+        "zIndex": 21,
+        "visibleByDefault": true,
+        "group": "Mouth",
+        "folderPath": "Head/Mouth",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 1022,
+          "y": 1406,
+          "width": 53,
+          "height": 47
+        }
+      },
+      {
+        "id": "head_mouth_teeth_lower",
+        "name": "Teeth_Lower",
+        "assetPath": "./assets/head_mouth_teeth_lower.png",
+        "zIndex": 20,
+        "visibleByDefault": true,
+        "group": "Mouth",
+        "folderPath": "Head/Mouth",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 1016,
+          "y": 1412,
+          "width": 66,
+          "height": 29
+        }
+      },
+      {
+        "id": "head_mouth_teeth_upper",
+        "name": "Teeth_Upper",
+        "assetPath": "./assets/head_mouth_teeth_upper.png",
+        "zIndex": 19,
+        "visibleByDefault": true,
+        "group": "Mouth",
+        "folderPath": "Head/Mouth",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 1017,
+          "y": 1388,
+          "width": 61,
+          "height": 21
+        }
+      },
+      {
+        "id": "head_mouth_mouth_inner",
+        "name": "Mouth_Inner",
+        "assetPath": "./assets/head_mouth_mouth_inner.png",
+        "zIndex": 18,
+        "visibleByDefault": true,
+        "group": "Mouth",
+        "folderPath": "Head/Mouth",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 1007,
+          "y": 1391,
+          "width": 84,
+          "height": 62
+        }
+      },
+      {
+        "id": "head_eyes_eyebrow_r",
+        "name": "Eyebrow (R)",
+        "assetPath": "./assets/head_eyes_eyebrow_r.png",
+        "zIndex": 17,
+        "visibleByDefault": true,
+        "group": "Eyes",
+        "folderPath": "Head/Eyes",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 1155,
+          "y": 967,
+          "width": 260,
+          "height": 66
+        }
+      },
+      {
+        "id": "head_eyes_eyebrow_l",
+        "name": "Eyebrow (L)",
+        "assetPath": "./assets/head_eyes_eyebrow_l.png",
+        "zIndex": 16,
+        "visibleByDefault": true,
+        "group": "Eyes",
+        "folderPath": "Head/Eyes",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 691,
+          "y": 972,
+          "width": 236,
+          "height": 72
+        }
+      },
+      {
+        "id": "head_eyes_eyelash_l",
+        "name": "Eyelash (L)",
+        "assetPath": "./assets/head_eyes_eyelash_l.png",
+        "zIndex": 15,
+        "visibleByDefault": true,
+        "group": "Eyes",
+        "folderPath": "Head/Eyes",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 670,
+          "y": 1095,
+          "width": 272,
+          "height": 138
+        }
+      },
+      {
+        "id": "head_eyes_eye_pupil_l",
+        "name": "Eye Pupil (L)",
+        "assetPath": "./assets/head_eyes_eye_pupil_l.png",
+        "zIndex": 14,
+        "visibleByDefault": true,
+        "group": "Eyes",
+        "folderPath": "Head/Eyes",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        }
+      },
+      {
+        "id": "head_eyes_iris_split_",
+        "name": "iris_split 복사",
+        "assetPath": "./assets/head_eyes_iris_split_.png",
+        "zIndex": 13,
+        "visibleByDefault": true,
+        "group": "Eyes",
+        "folderPath": "Head/Eyes",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 791,
+          "y": 1112,
+          "width": 116,
+          "height": 116
+        }
+      },
+      {
+        "id": "head_eyes_eye_white_l",
+        "name": "Eye White (L)",
+        "assetPath": "./assets/head_eyes_eye_white_l.png",
+        "zIndex": 12,
+        "visibleByDefault": true,
+        "group": "Eyes",
+        "folderPath": "Head/Eyes",
+        "blendMode": "normal",
+        "placementBounds": {
+          "x": 729,
+          "y": 1126,
+          "width": 192,
           "height": 89
         }
       },
       {
-        "id": "eyelash_left",
-        "name": "Eyelash_L",
-        "assetPath": "./assets/eyelash_left.png",
-        "zIndex": 43,
+        "id": "head_eyes_eyelash_r",
+        "name": "Eyelash (R)",
+        "assetPath": "./assets/head_eyes_eyelash_r.png",
+        "zIndex": 11,
         "visibleByDefault": true,
-        "group": "Face",
-        "folderPath": "Character/Face",
+        "group": "Eyes",
+        "folderPath": "Head/Eyes",
         "blendMode": "normal",
         "placementBounds": {
-          "x": 313,
-          "y": 778,
-          "width": 158,
-          "height": 91
+          "x": 1166,
+          "y": 1085,
+          "width": 267,
+          "height": 143
         }
       },
       {
-        "id": "eyebrow_left",
-        "name": "Eyebrow_L",
-        "assetPath": "./assets/eyebrow_left.png",
-        "zIndex": 44,
+        "id": "head_eyes_eye_pupil_r",
+        "name": "Eye Pupil (R)",
+        "assetPath": "./assets/head_eyes_eye_pupil_r.png",
+        "zIndex": 10,
         "visibleByDefault": true,
-        "group": "Face",
-        "folderPath": "Character/Face",
+        "group": "Eyes",
+        "folderPath": "Head/Eyes",
         "blendMode": "normal",
         "placementBounds": {
-          "x": 330,
-          "y": 711,
-          "width": 149,
-          "height": 23
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
         }
       },
       {
-        "id": "iris_right",
-        "name": "Iris_R",
-        "assetPath": "./assets/iris_right.png",
-        "zIndex": 50,
+        "id": "head_eyes_iris_split",
+        "name": "iris_split",
+        "assetPath": "./assets/head_eyes_iris_split.png",
+        "zIndex": 9,
         "visibleByDefault": true,
-        "group": "Face",
-        "folderPath": "Character/Face",
+        "group": "Eyes",
+        "folderPath": "Head/Eyes",
         "blendMode": "normal",
         "placementBounds": {
-          "x": 556,
-          "y": 797,
-          "width": 134,
-          "height": 89
+          "x": 1202,
+          "y": 1110,
+          "width": 116,
+          "height": 116
         }
       },
       {
-        "id": "eyelash_right",
-        "name": "Eyelash_R",
-        "assetPath": "./assets/eyelash_right.png",
-        "zIndex": 53,
+        "id": "head_eyes_eye_white_r",
+        "name": "Eye White (R)",
+        "assetPath": "./assets/head_eyes_eye_white_r.png",
+        "zIndex": 8,
         "visibleByDefault": true,
-        "group": "Face",
-        "folderPath": "Character/Face",
+        "group": "Eyes",
+        "folderPath": "Head/Eyes",
         "blendMode": "normal",
         "placementBounds": {
-          "x": 599,
-          "y": 776,
-          "width": 165,
+          "x": 1188,
+          "y": 1118,
+          "width": 187,
           "height": 90
         }
       },
       {
-        "id": "eyebrow_right",
-        "name": "Eyebrow_R",
-        "assetPath": "./assets/eyebrow_right.png",
-        "zIndex": 54,
+        "id": "head_face_nose_line",
+        "name": "Nose_Line",
+        "assetPath": "./assets/head_face_nose_line.png",
+        "zIndex": 7,
         "visibleByDefault": true,
         "group": "Face",
-        "folderPath": "Character/Face",
+        "folderPath": "Head/Face",
         "blendMode": "normal",
         "placementBounds": {
-          "x": 584,
-          "y": 711,
-          "width": 146,
-          "height": 22
+          "x": 1038,
+          "y": 1276,
+          "width": 4,
+          "height": 9
         }
       },
       {
-        "id": "mouth_mouth_inner",
-        "name": "Mouth_Inner",
-        "assetPath": "./assets/mouth_mouth_inner.png",
-        "zIndex": 60,
+        "id": "head_face_nose_shadow",
+        "name": "Nose_Shadow",
+        "assetPath": "./assets/head_face_nose_shadow.png",
+        "zIndex": 6,
         "visibleByDefault": true,
-        "group": "Mouth",
-        "folderPath": "Character/Mouth",
+        "group": "Face",
+        "folderPath": "Head/Face",
         "blendMode": "normal",
-        "placementBounds": null
+        "placementBounds": {
+          "x": 1013,
+          "y": 1239,
+          "width": 63,
+          "height": 45
+        }
       },
       {
-        "id": "mouth_teeth_upper",
-        "name": "Teeth_Upper",
-        "assetPath": "./assets/mouth_teeth_upper.png",
-        "zIndex": 61,
+        "id": "head_face_face_blush_l",
+        "name": "Face_Blush_L",
+        "assetPath": "./assets/head_face_face_blush_l.png",
+        "zIndex": 5,
         "visibleByDefault": true,
-        "group": "Mouth",
-        "folderPath": "Character/Mouth",
+        "group": "Face",
+        "folderPath": "Head/Face",
         "blendMode": "normal",
-        "placementBounds": null
+        "placementBounds": {
+          "x": 1078,
+          "y": 1095,
+          "width": 414,
+          "height": 429
+        }
       },
       {
-        "id": "mouth_teeth_under",
-        "name": "Teeth_Lower",
-        "assetPath": "./assets/mouth_teeth_under.png",
-        "zIndex": 62,
+        "id": "head_face_face_blush_r",
+        "name": "Face_Blush_R",
+        "assetPath": "./assets/head_face_face_blush_r.png",
+        "zIndex": 4,
         "visibleByDefault": true,
-        "group": "Mouth",
-        "folderPath": "Character/Mouth",
+        "group": "Face",
+        "folderPath": "Head/Face",
         "blendMode": "normal",
-        "placementBounds": null
+        "placementBounds": {
+          "x": 604,
+          "y": 1095,
+          "width": 414,
+          "height": 429
+        }
       },
       {
-        "id": "mouth_togue",
-        "name": "Tongue",
-        "assetPath": "./assets/mouth_togue.png",
-        "zIndex": 63,
+        "id": "head_face_face_outline",
+        "name": "Face Outline",
+        "assetPath": "./assets/head_face_face_outline.png",
+        "zIndex": 3,
         "visibleByDefault": true,
-        "group": "Mouth",
-        "folderPath": "Character/Mouth",
+        "group": "Face",
+        "folderPath": "Head/Face",
         "blendMode": "normal",
-        "placementBounds": null
+        "placementBounds": {
+          "x": 614,
+          "y": 590,
+          "width": 855,
+          "height": 967
+        }
       },
       {
-        "id": "mouth_base",
-        "name": "Mouth_Base",
-        "assetPath": "./assets/mouth_base.png",
-        "zIndex": 64,
+        "id": "head_face_face_skin_base",
+        "name": "Face Skin Base",
+        "assetPath": "./assets/head_face_face_skin_base.png",
+        "zIndex": 2,
         "visibleByDefault": true,
-        "group": "Mouth",
-        "folderPath": "Character/Mouth",
+        "group": "Face",
+        "folderPath": "Head/Face",
         "blendMode": "normal",
-        "placementBounds": null
+        "placementBounds": {
+          "x": 615,
+          "y": 590,
+          "width": 854,
+          "height": 966
+        }
       },
       {
-        "id": "whole_face_focus",
-        "name": "Whole Face Focus",
-        "assetPath": "./assets/whole_face_focus.png",
-        "zIndex": 100,
+        "id": "back_hair",
+        "name": "Back Hair",
+        "assetPath": "./assets/back_hair.png",
+        "zIndex": 1,
         "visibleByDefault": true,
-        "group": "Geometry",
-        "folderPath": "99_Debug/Geometry",
+        "group": null,
+        "folderPath": null,
         "blendMode": "normal",
-        "placementBounds": null
-      },
-      {
-        "id": "brow_lash_focus",
-        "name": "Brow Lash Focus",
-        "assetPath": "./assets/brow_lash_focus.png",
-        "zIndex": 110,
-        "visibleByDefault": true,
-        "group": "Geometry",
-        "folderPath": "99_Debug/Geometry",
-        "blendMode": "normal",
-        "placementBounds": null
-      },
-      {
-        "id": "brow_lash_candidate",
-        "name": "Brow_Lash_Candidate",
-        "assetPath": "./assets/brow_lash_candidate.png",
-        "zIndex": 115,
-        "visibleByDefault": true,
-        "group": "Debug",
-        "folderPath": "99_Debug/ManualGeneration",
-        "blendMode": "normal",
-        "placementBounds": null
-      },
-      {
-        "id": "eye_left_focus",
-        "name": "Left Eye Focus",
-        "assetPath": "./assets/eye_left_focus.png",
-        "zIndex": 120,
-        "visibleByDefault": true,
-        "group": "Geometry",
-        "folderPath": "99_Debug/Geometry",
-        "blendMode": "normal",
-        "placementBounds": null
-      },
-      {
-        "id": "whole_face_nano",
-        "name": "Whole Face Nano Crop",
-        "assetPath": "./assets/whole_face_nano.png",
-        "zIndex": 120,
-        "visibleByDefault": true,
-        "group": "Debug",
-        "folderPath": "99_Debug/Crops",
-        "blendMode": "normal",
-        "placementBounds": null
-      },
-      {
-        "id": "brow_lash_nano",
-        "name": "Brow Lash Nano Crop",
-        "assetPath": "./assets/brow_lash_nano.png",
-        "zIndex": 121,
-        "visibleByDefault": true,
-        "group": "Debug",
-        "folderPath": "99_Debug/Crops",
-        "blendMode": "normal",
-        "placementBounds": null
-      },
-      {
-        "id": "eye_left_nano",
-        "name": "Left Eye Nano Crop",
-        "assetPath": "./assets/eye_left_nano.png",
-        "zIndex": 122,
-        "visibleByDefault": true,
-        "group": "Debug",
-        "folderPath": "99_Debug/Crops",
-        "blendMode": "normal",
-        "placementBounds": null
-      },
-      {
-        "id": "anchor_debug",
-        "name": "Anchor Debug",
-        "assetPath": "./assets/anchor_debug.png",
-        "zIndex": 130,
-        "visibleByDefault": true,
-        "group": "Debug",
-        "folderPath": "99_Debug/Anchors",
-        "blendMode": "normal",
-        "placementBounds": null
-      },
-      {
-        "id": "raw_face_outline",
-        "name": "Raw Face Outline",
-        "assetPath": "./assets/raw_face_outline.png",
-        "zIndex": 311,
-        "visibleByDefault": true,
-        "group": "Debug",
-        "folderPath": "99_Debug/ManualGeneration",
-        "blendMode": "normal",
-        "placementBounds": null
+        "placementBounds": {
+          "x": 337,
+          "y": 292,
+          "width": 1409,
+          "height": 1471
+        }
       }
-    ],
-    "debugAssets": [
-      {
-        "id": "raw_face_outline",
-        "kind": "debug",
-        "assetPath": "./assets/raw_face_outline_1.png"
-      },
-      {
-        "id": "vector_face_outline",
-        "kind": "debug",
-        "assetPath": "./assets/vector_face_outline.png"
-      },
-      {
-        "id": "whole_face_nano_input",
-        "kind": "debug",
-        "assetPath": "./assets/whole_face_nano_input.png"
-      },
-      {
-        "id": "brow_lash_nano_input",
-        "kind": "debug",
-        "assetPath": "./assets/brow_lash_nano_input.png"
-      },
-      {
-        "id": "eye_left_nano_input",
-        "kind": "debug",
-        "assetPath": "./assets/eye_left_nano_input.png"
-      }
-    ],
-    "payment": {
-      "locked": true,
-      "checkoutUrl": null,
-      "downloadToken": null
-    }
+    ]
   }
 }
