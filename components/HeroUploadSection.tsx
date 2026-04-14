@@ -265,12 +265,12 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
         const ext = file.name.split(".").pop() ?? "png";
         const name = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
         const { error: stErr } = await supabase.storage
-          .from("uploads")
+          .from("character-uploads")
           .upload(name, file, { contentType: file.type });
         if (stErr) throw stErr;
         const { error: dbErr } = await supabase
-          .from("upload_requests")
-          .insert({ contact: `${contactType}:${trimmed}`, image_path: name, status: "pending" });
+          .from("registrations")
+          .insert({ type: "demo_request", contact: `${contactType}:${trimmed}`, image_path: name, status: "pending" });
         if (dbErr) throw dbErr;
       }
       setStep("done");
