@@ -45,30 +45,36 @@ export type Database = {
           created_at: string
           id: string
           image_path: string | null
+          language: string | null
           role: string | null
           role_detail: string | null
           status: string | null
           type: string
+          utm: string | null
         }
         Insert: {
           contact: string
           created_at?: string
           id?: string
           image_path?: string | null
+          language?: string | null
           role?: string | null
           role_detail?: string | null
           status?: string | null
           type: string
+          utm?: string | null
         }
         Update: {
           contact?: string
           created_at?: string
           id?: string
           image_path?: string | null
+          language?: string | null
           role?: string | null
           role_detail?: string | null
           status?: string | null
           type?: string
+          utm?: string | null
         }
         Relationships: []
       }
