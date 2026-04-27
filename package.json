@@ -23,6 +23,7 @@
   "homepage": "https://github.com/YoucanbeVtuber/landing-page#readme",
   "dependencies": {
     "@supabase/supabase-js": "^2.97.0",
+    "@vercel/analytics": "^2.0.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.34.0",
     "lucide-react": "^0.575.0",

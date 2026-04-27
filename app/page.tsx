@@ -7,6 +7,7 @@ import LayerLogicSection from "@/components/LayerLogicSection";
 import MotionSection from "@/components/MotionSection";
 import UseCaseSection from "@/components/UseCaseSection";
 import PreRegisterSection from "@/components/PreRegisterSection";
+import SiteFooter from "@/components/SiteFooter";
 import type { Lang } from "@/content/copy";
 
 export default function Home() {
@@ -38,6 +39,7 @@ export default function Home() {
       <UseCaseSection lang={lang} />
       <MotionSection lang={lang} />
       <PreRegisterSection lang={lang} />
+      <SiteFooter lang={lang} />
     </main>
   );
 }
