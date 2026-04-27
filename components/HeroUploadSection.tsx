@@ -264,13 +264,21 @@ export default function HeroUploadSection({ lang = "en" }: { lang?: Lang }) {
       if (isSupabaseConfigured && supabase && file) {
         const ext = file.name.split(".").pop() ?? "png";
         const name = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const utm = new URLSearchParams(window.location.search).get("utm")?.trim() || null;
         const { error: stErr } = await supabase.storage
           .from("character-uploads")
           .upload(name, file, { contentType: file.type });
         if (stErr) throw stErr;
         const { error: dbErr } = await supabase
           .from("registrations")
-          .insert({ type: "demo_request", contact: `${contactType}:${trimmed}`, image_path: name, status: "pending" });
+          .insert({
+            type: "demo_request",
+            contact: `${contactType}:${trimmed}`,
+            image_path: name,
+            status: "pending",
+            language: lang,
+            utm,
+          });
         if (dbErr) throw dbErr;
       }
       setStep("done");

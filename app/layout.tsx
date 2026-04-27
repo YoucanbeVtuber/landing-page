@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Inter, Gloock, Hanken_Grotesk, Noto_Serif_KR } from "next/font/google";
 import "./globals.css";
 import "./main-override.css";
@@ -45,13 +46,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${gloock.variable} ${hanken.variable} ${notoSerifKR.variable}`} suppressHydrationWarning>
       <body className="antialiased bg-white text-gray-900">
         {children}
-        {/* Footer */}
-        <footer className="w-full border-t border-gray-100 bg-white py-12 px-6 text-center">
-          <p className="text-lg font-bold text-gray-900 mb-1">LIVINGCEl</p>
-          <p className="text-sm text-gray-400">
-            © {new Date().getFullYear()} LIVINGCEl. All rights reserved.
-          </p>
-        </footer>
+        <Analytics />
       </body>
     </html>
   );
